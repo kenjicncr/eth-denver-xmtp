@@ -1,3 +1,13 @@
+## TASK LIST ##
+
+### Majors ###
+- [ ] Send USDC
+    - [ ] Widget / UI
+    - [ ] TX Flow
+- [ ] Create a group chat
+- [ ] Query Harpie for scam walet tests (Automatic query with requests integration)
+- [ ] Make 0xAPI swap
+
 # XMTP Inbox web chat app
 
 ![Unit and Component Tests](https://github.com/xmtp-labs/xmtp-inbox-web/actions/workflows/tests.yml/badge.svg)

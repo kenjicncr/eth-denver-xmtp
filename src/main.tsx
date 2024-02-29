@@ -26,6 +26,8 @@ import App from "./controllers/AppController";
 import { isAppEnvDemo } from "./helpers";
 import { mockConnector } from "./helpers/mockConnector";
 
+import { CurrencyRequestContentTypeConfig } from "./xmtp-content-types/currency-request"; }
+
 // Increment with any schema change; e.g. adding support for a new content type
 const DB_VERSION = 6;
 
@@ -42,6 +44,7 @@ const contentTypeConfigs = [
   reactionContentTypeConfig,
   replyContentTypeConfig,
   customConfig,
+  CurrencyRequestContentTypeConfig
 ];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(

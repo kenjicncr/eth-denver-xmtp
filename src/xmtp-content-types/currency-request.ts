@@ -12,17 +12,23 @@ export const ContentTypeCurrencyRequest = new ContentTypeId({
 
 export class CurrencyRequest {
     public amount: bigint
+    public chainId: number
+    public token: `0x${string}`
     public from: `0x${string}`
     public to: `0x${string}`
     public message: string
 
     constructor(
         amount: bigint,
+        chainId: number,
+        token: `0x${string}`,
         from: `0x${string}`,
         to: `0x${string}`,
         message: string,
     ) {
         this.amount = amount
+        this.chainId = chainId
+        this.token = token
         this.from = from
         this.to = to
         this.message = message
@@ -35,19 +41,19 @@ export class ContentTypeSendCurrencyCodec
         return ContentTypeCurrencyRequest
     }
     encode(req: CurrencyRequest): EncodedContent {
-        const { amount, from, to, message } = req;
+        const { amount, chainId, token, from, to, message } = req;
         return {
             type: ContentTypeCurrencyRequest,
             parameters: {},
-            content: new TextEncoder().encode(JSON.stringify({ amount, from, to, message })),
+            content: new TextEncoder().encode(JSON.stringify({ amount, chainId, token, from, to, message })),
         }
     }
 
     // The decode method decodes the byte array, parses the string into numbers (num1, num2), and returns their product
     decode(encodedContent: EncodedContent): CurrencyRequest {
         const decodedContent = new TextDecoder().decode(encodedContent.content)
-        const { amount, from, to, message } = JSON.parse(decodedContent)
-        return new CurrencyRequest(amount, from, to, message)
+        const { amount, chainId, token, from, to, message } = JSON.parse(decodedContent)
+        return new CurrencyRequest(amount, chainId, token, from, to, message)
     }
 
     fallback(content: CurrencyRequest): string | undefined {

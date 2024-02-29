@@ -16,7 +16,7 @@ import {
   replyContentTypeConfig,
   XMTPProvider,
 } from "@xmtp/react-sdk";
-import { mainnet } from "wagmi/chains";
+import { mainnet, base, moonbeam } from "wagmi/chains";
 import { infuraProvider } from "wagmi/providers/infura";
 import {
   ContentTypeScreenEffect,
@@ -48,7 +48,7 @@ const contentTypeConfigs = [
 ];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
+  [mainnet, base, moonbeam ],
   [
     infuraProvider({ apiKey: import.meta.env.VITE_INFURA_ID ?? "" }),
     publicProvider(),
@@ -79,7 +79,7 @@ const wagmiDemoConfig = createConfig({
   connectors: [mockConnector],
   publicClient,
   webSocketPublicClient,
-});
+});wagmiDemoConfig
 
 const wagmiConfig = createConfig({
   autoConnect: true,

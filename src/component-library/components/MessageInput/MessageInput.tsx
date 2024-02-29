@@ -15,6 +15,7 @@ import {
   StopIcon,
   VideoCameraIcon,
   XCircleIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/outline";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
@@ -39,6 +40,7 @@ import { useRecordingTimer } from "../../../hooks/useRecordingTimer";
 import "react-tooltip/dist/react-tooltip.css";
 import { useLongPress } from "../../../hooks/useLongPress";
 import { EffectDialog } from "../EffectDialog/EffectDialog";
+import { SendOrRequestCurrency } from "../SendOrRequestCurrency/SendOrRequestCurrency";
 
 type InputProps = {
   /**
@@ -99,6 +101,8 @@ export const MessageInput = ({
   // For effects
   const { sendMessage: _sendMessage } = _useSendMessage();
   const [openEffectDialog, setOpenEffectDialog] = useState(false);
+  const [openSendOrRequestCurrency, setOpenSendOrRequestCurrency] =
+    useState(false);
 
   const { t } = useTranslation();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -112,6 +116,10 @@ export const MessageInput = ({
     (state) => state.setConversationTopic,
   );
   const conversationTopic = useXmtpStore((state) => state.conversationTopic);
+  const recipientName = useXmtpStore((state) => state.recipientName);
+  const recipientAddress = useXmtpStore((state) => state.recipientAddress);
+  const recipientAvatar = useXmtpStore((s) => s.recipientAvatar);
+  const recipientState = useXmtpStore((s) => s.recipientState);
 
   const inputFile = useRef<HTMLInputElement | null>(null);
 
@@ -377,14 +385,14 @@ export const MessageInput = ({
                 e.key === "Enter" && !e.shiftKey && onButtonClick("image")
               }
             />
-            <VideoCameraIcon
+            <CurrencyDollarIcon
               tabIndex={0}
               width={26}
               height={26}
               className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
-              onClick={() => onButtonClick("video")}
+              onClick={() => setOpenSendOrRequestCurrency(true)}
               onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey && onButtonClick("video")
+                e.key === "Enter" && !e.shiftKey && onButtonClick("currency")
               }
             />
             <DocumentIcon
@@ -395,6 +403,16 @@ export const MessageInput = ({
               onClick={() => onButtonClick("application")}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("application")
+              }
+            />
+            <VideoCameraIcon
+              tabIndex={0}
+              width={26}
+              height={26}
+              className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+              onClick={() => onButtonClick("video")}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && onButtonClick("video")
               }
             />
             {status !== "recording" ? (
@@ -447,6 +465,21 @@ export const MessageInput = ({
           </div>
         </div>
       </form>
+      <SendOrRequestCurrency
+        onClose={() => setOpenSendOrRequestCurrency(false)}
+        isOpen={openSendOrRequestCurrency}
+        resolvedAddress={{
+          displayAddress: recipientName ?? recipientAddress ?? "",
+          walletAddress: recipientName
+            ? recipientAddress ?? undefined
+            : undefined,
+        }}
+        avatarUrlProps={{
+          url: recipientAvatar || "",
+          isLoading: recipientState === "loading",
+          address: recipientAddress ?? undefined,
+        }}
+      />
     </>
   );
 };

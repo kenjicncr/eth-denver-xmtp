@@ -58,6 +58,7 @@
     "process": "^0.11.10",
     "react": "18.2.0",
     "react-blockies": "^1.4.1",
+    "react-currency-input-field": "^3.8.0",
     "react-dom": "18.2.0",
     "react-emoji-render": "^1.2.4",
     "react-i18next": "^12.2.0",

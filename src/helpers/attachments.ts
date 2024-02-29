@@ -57,6 +57,7 @@ export type contentTypes =
   | "video"
   | "application"
   | "audio"
+  | "currency"
   | undefined;
 
 export const getContentTypeFromFileName = (filename: string): contentTypes => {

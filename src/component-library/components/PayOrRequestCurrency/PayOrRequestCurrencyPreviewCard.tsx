@@ -1,10 +1,26 @@
 import { CachedMessage } from "@xmtp/react-sdk";
+
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
 import { tokens } from "../../../tokens/mainnet";
 import { formatUnits } from "viem";
 import { classNames } from "../../../helpers";
 
+function getChainName(chainId: number) {
+  switch (chainId) {
+    case 1:
+      return "Ethereum Mainnet";
+    case 3:
+      return "Ropsten Testnet";
+    case 4:
+      return "Rinkeby Testnet";
+    case 8453:
+      return "Base";
+    // Add more cases for other chain ids
+    default:
+      return "Unknown Chain";
+  }
+}
 interface MessageContentControllerProps {
   message?: CachedMessage;
   isSelf: boolean;
@@ -76,6 +92,11 @@ export const PayOrRequestCurrencyPreviewCard = ({
               {isDollar ? `$${amount}` : `${amount} ${token?.symbol}`}
             </span>
           </p>
+          {currencyRequest && (
+            <p className="text-center text-sm">
+              {getChainName(currencyRequest?.chainId)}
+            </p>
+          )}
         </div>
         <div>
           {isSenderRequestingCurrency && !isSelf && (

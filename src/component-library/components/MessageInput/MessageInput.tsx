@@ -47,6 +47,11 @@ import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { PayOrRequestCurrencyPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyPreviewCard";
 import { PayOrRequestCurrencyInputPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyInputPreviewCard";
 import { useCurrencyRequestModal } from "../../../hooks/useCurrencyRequestModal";
+import { useSendCurrency } from "../../../hooks/useSendCurrency";
+import { formatUnits, parseUnits } from "ethers";
+import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
+import { baseTokens } from "../../../tokens/base";
+import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
 
 type InputProps = {
   /**
@@ -132,6 +137,30 @@ export const MessageInput = ({
   const currRequest = useCurrencyRequestModal({
     receiverAddress: recipientAddress,
   });
+
+  const sendCurrency = useSendCurrency({
+    amount: currRequest?.currencyRequest?.amount,
+    chainId: currRequest?.currencyRequest?.chainId,
+    tokenAddress: currRequest?.currencyRequest?.token,
+    from: currRequest?.currencyRequest?.from,
+    to: currRequest?.currencyRequest?.to,
+    onSendSuccess: (data) => {
+      console.log("succesfully sent  payment", data);
+    },
+  });
+
+  const [showConfirmPayment, setShowConfirmPayment] = useState(false);
+
+  const onPayCurrency = (currencyRequest: CurrencyRequest) => {
+    // sendCurrency.write?.();
+    currRequest.setCurrencyRequest(currencyRequest);
+    setShowConfirmPayment(true);
+  };
+
+  const handleConfirmPayment = () => {
+    sendCurrency.write?.();
+    setShowConfirmPayment(false);
+  };
 
   const inputFile = useRef<HTMLInputElement | null>(null);
 
@@ -519,11 +548,18 @@ export const MessageInput = ({
         onChangeNote={(note) => currRequest.setCurrencyRequestNote(note)}
         onChangeValue={(value) => currRequest.setCurrencyRequestValue(value)}
         onRequest={(request) => onRequestCurrency(request)}
+        onPay={(request) => onPayCurrency(request)}
         avatarUrlProps={{
           url: recipientAvatar || "",
           isLoading: recipientState === "loading",
           address: recipientAddress ?? undefined,
         }}
+      />
+      <ConfirmationModal
+        onConfirm={handleConfirmPayment}
+        onClose={() => setShowConfirmPayment(false)}
+        currencyRequest={currRequest.currencyRequest}
+        isOpen={showConfirmPayment}
       />
     </>
   );

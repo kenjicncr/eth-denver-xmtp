@@ -4,6 +4,7 @@ import { formatUnits } from "ethers";
 import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
 import { tokens } from "../../../tokens/mainnet";
 import { XCircleIcon } from "@heroicons/react/outline";
+import { baseTokens } from "../../../tokens/base";
 
 interface PayOrRequestCurrencyInputPreviewCardProps {
   currencyRequest: CurrencyRequest;
@@ -14,9 +15,9 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
   currencyRequest,
   onCancel,
 }: PayOrRequestCurrencyInputPreviewCardProps) => {
-  const mainnetToken = tokens;
+  const tokens = baseTokens;
   const token = currencyRequest
-    ? getTokenByAddress(mainnetToken, currencyRequest?.token)
+    ? getTokenByAddress(tokens, currencyRequest?.token)
     : null;
 
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";

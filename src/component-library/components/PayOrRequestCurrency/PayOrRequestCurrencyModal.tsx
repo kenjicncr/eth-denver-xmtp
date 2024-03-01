@@ -13,6 +13,7 @@ import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { tokens } from "../../../tokens/mainnet";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import { ContactsCombobox } from "./ContactsCombobox";
+import { baseTokens } from "../../../tokens/base";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -49,11 +50,12 @@ interface SendOrRequestCurrencyProps {
   note: string;
   onChangeValue: (value: string) => void;
   onChangeNote: (note: string) => void;
+  onPay: (currencyRequest: CurrencyRequest) => void;
 }
 export const PayOrRequestCurrencyModal = ({
   isOpen,
   onClose,
-  onOpen,
+  onPay,
   onRequest,
   onSend,
   resolvedAddress,
@@ -64,7 +66,7 @@ export const PayOrRequestCurrencyModal = ({
   value,
   note,
 }: SendOrRequestCurrencyProps) => {
-  const tokenList = tokens;
+  const tokenList = baseTokens;
   const USDC = tokenList[0];
   const prefix = "$";
 
@@ -96,13 +98,31 @@ export const PayOrRequestCurrencyModal = ({
       if (resolvedAddress?.displayAddress) {
         const currencyRequest: CurrencyRequest = {
           amount: parseUnits(value, USDC.decimals).toString(),
-          chainId: 1,
+          chainId: 8453,
           token: USDC.address as `0x${string}`,
           from: resolvedAddress.displayAddress as `0x${string}`,
           to: clientAddress as `0x${string}`,
           message: note,
         };
         onRequest(currencyRequest);
+
+        closeModal();
+      }
+    }
+  };
+
+  const handlePayRequest = () => {
+    if (onPay) {
+      if (resolvedAddress?.displayAddress) {
+        const currencyRequest: CurrencyRequest = {
+          amount: parseUnits(value, USDC.decimals).toString(),
+          chainId: 8453,
+          token: USDC.address as `0x${string}`,
+          to: resolvedAddress.displayAddress as `0x${string}`,
+          from: clientAddress as `0x${string}`,
+          message: note,
+        };
+        onPay(currencyRequest);
 
         closeModal();
       }
@@ -204,7 +224,7 @@ export const PayOrRequestCurrencyModal = ({
                   <button
                     type="button"
                     className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-800 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={closeModal}>
+                    onClick={handlePayRequest}>
                     Pay
                   </button>
                 </div>

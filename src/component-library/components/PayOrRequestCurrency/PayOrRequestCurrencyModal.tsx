@@ -1,6 +1,6 @@
 import { t } from "i18next";
-import { useState, Fragment, useRef, useEffect } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { useState, Fragment } from "react";
+import { Combobox, Dialog, Transition } from "@headlessui/react";
 import { parseUnits } from "ethers/utils";
 
 import CurrencyInput, {
@@ -11,6 +11,8 @@ import { RecipientAddress } from "../../../store/xmtp";
 import { Avatar } from "../Avatar/Avatar";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { tokens } from "../../../tokens/mainnet";
+import { PlusCircleIcon } from "@heroicons/react/outline";
+import { ContactsCombobox } from "./ContactsCombobox";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -67,11 +69,6 @@ export const PayOrRequestCurrencyModal = ({
   const prefix = "$";
 
   const [className, setClassName] = useState("");
-
-  const [errorMessage, setErrorMessage] = useState("");
-  const [currencyInputWidth, setCurrencyInputWidth] = useState(0);
-
-  const currencyInputRef = useRef(null);
   /**
    * Handle validation
    */
@@ -112,6 +109,8 @@ export const PayOrRequestCurrencyModal = ({
     }
   };
 
+  console.log({ resolvedAddress });
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -142,16 +141,33 @@ export const PayOrRequestCurrencyModal = ({
                   className="text-center text-xl font-bold leading-6 text-gray-700">
                   Request or pay money
                 </Dialog.Title>
-                <div className="mt-8 flex flex-col items-center">
-                  {resolvedAddress?.displayAddress && (
-                    <Avatar {...avatarUrlProps} />
-                  )}
-                  {resolvedAddress?.displayAddress && (
-                    <p className="mt-2 font-medium">
-                      {shortenAddress(resolvedAddress.displayAddress)}
-                    </p>
-                  )}
-                </div>
+                {resolvedAddress?.displayAddress ? (
+                  <div className="mt-8 flex flex-col items-center">
+                    {resolvedAddress?.displayAddress && (
+                      <Avatar {...avatarUrlProps} />
+                    )}
+                    {resolvedAddress?.displayAddress && (
+                      <p className="mt-2 font-medium">
+                        {resolvedAddress.displayAddress &&
+                        resolvedAddress.walletAddress
+                          ? resolvedAddress.displayAddress
+                          : shortenAddress(resolvedAddress.displayAddress)}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-8 flex flex-col items-center">
+                    <button className="relative hover:bg-gray-700 hover:-bg-opacity-80 rounded-full flex items-center justify-center overflow-hidden">
+                      <div>
+                        <Avatar />
+                      </div>
+                      <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-40 hover:bg-opacity-80">
+                        <PlusCircleIcon width={16} height={16} fill="#ffff" />
+                      </div>
+                    </button>
+                    <ContactsCombobox />
+                  </div>
+                )}
                 <div className="mt-2 flex items-center">
                   <CurrencyInput
                     id="validationCustom01"
@@ -160,6 +176,7 @@ export const PayOrRequestCurrencyModal = ({
                     defaultValue={value}
                     onValueChange={handleOnValueChange}
                     prefix={prefix}
+                    placeholder="$0.00"
                     step={1}
                     className="input:first-letter:text-sm min-w-[1px] p-0 text-4xl font-bold text-center w-auto border-0 focus:outline-none focus:border-none focus:shadow-none"
                     style={{

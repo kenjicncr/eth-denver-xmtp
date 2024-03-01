@@ -22,7 +22,7 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
 
   return (
-    <div className="relative m-4 p-8 w-fit min-w-[300px] bg-[#ef4444] text-white rounded-3xl">
+    <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-black text-white rounded-3xl">
       <div className="absolute top-1 right-1">
         <button onClick={onCancel}>
           <XCircleIcon height={40} width={40} />
@@ -42,10 +42,12 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
           </span>
         </p>
         <p>Request</p>
-        <div className="mt-8 text-center">
-          <p className="text-sm  text-gray-200">For</p>
-          <p>{currencyRequest.message}</p>
-        </div>
+        {currencyRequest.message && (
+          <div className="mt-8 text-center">
+            <p className="text-sm  text-gray-200">For</p>
+            <p>{currencyRequest.message}</p>
+          </div>
+        )}
       </div>
     </div>
   );

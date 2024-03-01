@@ -13,6 +13,7 @@ import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import { ContactsCombobox } from "./ContactsCombobox";
 import { baseTokens } from "../../../tokens/base";
+import { HarpieAlert } from "./HarpieAlert";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -69,6 +70,7 @@ export const PayOrRequestCurrencyModal = ({
   const prefix = "$";
 
   const [className, setClassName] = useState("");
+  const [isFlagged, setIsFlagged] = useState(false);
   /**
    * Handle validation
    */
@@ -127,10 +129,13 @@ export const PayOrRequestCurrencyModal = ({
     }
   };
 
+  
+
   console.log({ resolvedAddress });
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
+
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
@@ -153,7 +158,11 @@ export const PayOrRequestCurrencyModal = ({
               leave="ease-in duration-200"
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95">
+
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+
+                <HarpieAlert isFlagged={true}></HarpieAlert>
+
                 <Dialog.Title
                   as="h3"
                   className="text-center text-xl font-bold leading-6 text-gray-700">
@@ -167,7 +176,7 @@ export const PayOrRequestCurrencyModal = ({
                     {resolvedAddress?.displayAddress && (
                       <p className="mt-2 font-medium">
                         {resolvedAddress.displayAddress &&
-                        resolvedAddress.walletAddress
+                          resolvedAddress.walletAddress
                           ? resolvedAddress.displayAddress
                           : shortenAddress(resolvedAddress.displayAddress)}
                       </p>

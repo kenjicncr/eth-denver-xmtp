@@ -29,6 +29,7 @@ const MessageContentController = ({
   });
 
   const contentType = ContentTypeId.fromString(message.contentType);
+  console.log({ message, contentType, isSelf });
 
   if (contentType.sameAs(ContentTypeText)) {
     const content = message.content as string;
@@ -76,6 +77,7 @@ const MessageContentController = ({
 
   // render currency request here
   if (contentType.sameAs(ContentTypeCurrencyRequest)) {
+    console.log("yo show this", message);
     return (
       <PayOrRequestCurrencyPreviewCard message={message} isSelf={isSelf} />
     );

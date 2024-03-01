@@ -24,6 +24,10 @@ import {
   getCachedPeerAddressAvatar,
   getCachedPeerAddressName,
 } from "../helpers/conversation";
+import {
+  ContentTypeCurrencyRequest,
+  CurrencyRequest,
+} from "../xmtp-content-types/currency-request";
 
 interface MessagePreviewCardControllerProps {
   convo: CachedConversation;
@@ -128,6 +132,13 @@ export const MessagePreviewCardController = ({
         return (
           (previewContent as Attachment).filename ??
           (t("messages.attachment") || "Attachment")
+        );
+      }
+
+      if (ContentTypeCurrencyRequest.sameAs(previewContentType)) {
+        return (
+          (previewContent as CurrencyRequest).amount ??
+          (t("messages.currency_request") || "Currency Request")
         );
       }
 

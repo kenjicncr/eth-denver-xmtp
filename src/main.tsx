@@ -32,6 +32,7 @@ import {
 } from '@tanstack/react-query'
 
 import { CurrencyRequestContentTypeConfig } from "./xmtp-content-types/currency-request";
+import { transactionReferenceContentTypeConfig } from "./xmtp-content-types/transaction-reference";
 
 // Increment with any schema change; e.g. adding support for a new content type
 const DB_VERSION = 6;
@@ -50,6 +51,7 @@ const contentTypeConfigs = [
   replyContentTypeConfig,
   customConfig,
   CurrencyRequestContentTypeConfig,
+  transactionReferenceContentTypeConfig
 ];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(

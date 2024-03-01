@@ -1,9 +1,10 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { formatUnits } from "ethers";
-import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
+import { getTokenByAddress } from "../../../tokens/utils";
 import { tokens } from "../../../tokens/mainnet";
 import { XCircleIcon } from "@heroicons/react/outline";
+import { baseTokens } from "../../../tokens/base";
 
 interface PayOrRequestCurrencyInputPreviewCardProps {
   currencyRequest: CurrencyRequest;
@@ -14,15 +15,15 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
   currencyRequest,
   onCancel,
 }: PayOrRequestCurrencyInputPreviewCardProps) => {
-  const mainnetToken = tokens;
+  const tokens = baseTokens;
   const token = currencyRequest
-    ? getTokenByAddress(mainnetToken, currencyRequest?.token)
+    ? getTokenByAddress(tokens, currencyRequest?.token)
     : null;
 
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
 
   return (
-    <div className="relative m-4 p-8 w-fit min-w-[300px] bg-[#ef4444] text-white rounded-3xl">
+    <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-black text-white rounded-3xl">
       <div className="absolute top-1 right-1">
         <button onClick={onCancel}>
           <XCircleIcon height={40} width={40} />
@@ -42,10 +43,12 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
           </span>
         </p>
         <p>Request</p>
-        <div className="mt-8 text-center">
-          <p className="text-sm  text-gray-200">For</p>
-          <p>{currencyRequest.message}</p>
-        </div>
+        {currencyRequest.message && (
+          <div className="mt-8 text-center">
+            <p className="text-sm  text-gray-200">For</p>
+            <p>{currencyRequest.message}</p>
+          </div>
+        )}
       </div>
     </div>
   );

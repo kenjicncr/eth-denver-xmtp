@@ -46,6 +46,12 @@ import { PayOrRequestCurrencyModal } from "../PayOrRequestCurrency/PayOrRequestC
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { PayOrRequestCurrencyPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyPreviewCard";
 import { PayOrRequestCurrencyInputPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyInputPreviewCard";
+import { useCurrencyRequestModal } from "../../../hooks/useCurrencyRequestModal";
+import { useSendCurrency } from "../../../hooks/useSendCurrency";
+import { formatUnits, parseUnits } from "ethers";
+import { getTokenByAddress } from "../../../tokens/utils";
+import { baseTokens } from "../../../tokens/base";
+import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
 
 type InputProps = {
   /**
@@ -109,16 +115,11 @@ export const MessageInput = ({
   const senderAddress = client?.address;
 
   const [openEffectDialog, setOpenEffectDialog] = useState(false);
-  const [openSendOrRequestCurrency, setOpenSendOrRequestCurrency] =
-    useState(false);
 
   const { t } = useTranslation();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState("");
-  const [currencyRequestValue, setCurrencyRequestValue] = useState("");
-  const [currencyRequestNote, setCurrencyRequestNote] = useState("");
-  const [currencyRequest, setCurrencyRequest] =
-    useState<CurrencyRequest | null>(null);
+
   const [acceptedTypes, setAcceptedTypes]: [
     string | string[] | undefined,
     Dispatch<SetStateAction<string | string[] | undefined>>,
@@ -132,6 +133,34 @@ export const MessageInput = ({
   const recipientAddress = useXmtpStore((state) => state.recipientAddress);
   const recipientAvatar = useXmtpStore((s) => s.recipientAvatar);
   const recipientState = useXmtpStore((s) => s.recipientState);
+
+  const currRequest = useCurrencyRequestModal({
+    receiverAddress: recipientAddress,
+  });
+
+  const sendCurrency = useSendCurrency({
+    amount: currRequest?.currencyRequest?.amount,
+    chainId: currRequest?.currencyRequest?.chainId,
+    tokenAddress: currRequest?.currencyRequest?.token,
+    from: currRequest?.currencyRequest?.from,
+    to: currRequest?.currencyRequest?.to,
+    onSendSuccess: (data) => {
+      console.log("succesfully sent  payment", data);
+    },
+  });
+
+  const [showConfirmPayment, setShowConfirmPayment] = useState(false);
+
+  const onPayCurrency = (currencyRequest: CurrencyRequest) => {
+    // sendCurrency.write?.();
+    currRequest.setCurrencyRequest(currencyRequest);
+    setShowConfirmPayment(true);
+  };
+
+  const handleConfirmPayment = () => {
+    sendCurrency.write?.();
+    setShowConfirmPayment(false);
+  };
 
   const inputFile = useRef<HTMLInputElement | null>(null);
 
@@ -212,7 +241,7 @@ export const MessageInput = ({
     // the peerAddress check is for the type checker only
     // it's not possible to send a message without a valid peerAddress
 
-    if (peerAddress && (value || attachment || currencyRequest)) {
+    if (peerAddress && (value || attachment || currRequest.currencyRequest)) {
       // save reference to these values before clearing them from state
       const val = value;
       const attach = attachment;
@@ -220,6 +249,9 @@ export const MessageInput = ({
       setValue("");
       setAttachment(undefined);
       setAttachmentPreview(undefined);
+      currRequest.setCurrencyRequest(null);
+      currRequest.setCurrencyRequestNote("");
+      currRequest.setCurrencyRequestValue("0");
 
       let convo = conversation;
       if (!convo) {
@@ -247,9 +279,9 @@ export const MessageInput = ({
         void sendMessage(convo, val, "text");
       }
 
-      if (currencyRequest && convo) {
-        console.log("sending currency request", currencyRequest);
-        void sendMessage(convo, currencyRequest, "currencyRequest");
+      if (currRequest.currencyRequest && convo) {
+        console.log("sending currency request", currRequest.currencyRequest);
+        void sendMessage(convo, currRequest.currencyRequest, "currencyRequest");
       }
       // focus on message input after sending
       textAreaRef.current?.focus();
@@ -266,12 +298,12 @@ export const MessageInput = ({
     setConversationTopic,
     startConversation,
     value,
-    currencyRequest,
+    currRequest.currencyRequest,
   ]);
 
   // send currency request
   const onRequestCurrency = (currencyRequest: CurrencyRequest) => {
-    setCurrencyRequest(currencyRequest);
+    currRequest.setCurrencyRequest(currencyRequest);
   };
 
   const handleLongPress = () => {
@@ -397,14 +429,14 @@ export const MessageInput = ({
             />
           </div>
         )}
-        {currencyRequest && (
+        {currRequest.currencyRequest && (
           <div className="flex justify-center">
             <PayOrRequestCurrencyInputPreviewCard
-              currencyRequest={currencyRequest}
+              currencyRequest={currRequest.currencyRequest}
               onCancel={() => {
-                setCurrencyRequest(null);
-                setCurrencyRequestNote("");
-                setCurrencyRequestValue("0");
+                currRequest.setCurrencyRequest(null);
+                currRequest.setCurrencyRequestNote("");
+                currRequest.setCurrencyRequestValue("0");
               }}
             />
           </div>
@@ -426,7 +458,7 @@ export const MessageInput = ({
               width={26}
               height={26}
               className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
-              onClick={() => setOpenSendOrRequestCurrency(true)}
+              onClick={() => currRequest.setIsModalOpen(true)}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("currency")
               }
@@ -492,7 +524,7 @@ export const MessageInput = ({
               label={<ArrowUpIcon color="white" width="20" />}
               srText={t("aria_labels.submit_message") || ""}
               isDisabled={
-                !(value || attachmentPreview || currencyRequest) ||
+                !(value || attachmentPreview || currRequest.currencyRequest) ||
                 isDisabled ||
                 !!attachmentError ||
                 openEffectDialog
@@ -502,25 +534,32 @@ export const MessageInput = ({
         </div>
       </form>
       <PayOrRequestCurrencyModal
-        onClose={() => setOpenSendOrRequestCurrency(false)}
+        onClose={() => currRequest.setIsModalOpen(false)}
         clientAddress={senderAddress}
-        isOpen={openSendOrRequestCurrency}
+        isOpen={currRequest.isOpen}
         resolvedAddress={{
           displayAddress: recipientName ?? recipientAddress ?? "",
           walletAddress: recipientName
             ? recipientAddress ?? undefined
             : undefined,
         }}
-        note={currencyRequestNote}
-        value={currencyRequestValue}
-        onChangeNote={(note) => setCurrencyRequestNote(note)}
-        onChangeValue={(value) => setCurrencyRequestValue(value)}
+        note={currRequest.currencyRequestNote}
+        value={currRequest.currencyRequestValue}
+        onChangeNote={(note) => currRequest.setCurrencyRequestNote(note)}
+        onChangeValue={(value) => currRequest.setCurrencyRequestValue(value)}
         onRequest={(request) => onRequestCurrency(request)}
+        onPay={(request) => onPayCurrency(request)}
         avatarUrlProps={{
           url: recipientAvatar || "",
           isLoading: recipientState === "loading",
           address: recipientAddress ?? undefined,
         }}
+      />
+      <ConfirmationModal
+        onConfirm={handleConfirmPayment}
+        onClose={() => setShowConfirmPayment(false)}
+        currencyRequest={currRequest.currencyRequest}
+        isOpen={showConfirmPayment}
       />
     </>
   );

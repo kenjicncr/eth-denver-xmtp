@@ -55,7 +55,6 @@ export class ContentTypeSendCurrencyCodec
   // The decode method decodes the byte array, parses the string into numbers (num1, num2), and returns their product
   decode(encodedContent: EncodedContent): CurrencyRequest {
     const decodedContent = new TextDecoder().decode(encodedContent.content);
-    console.log(encodedContent.content);
     const { amount, chainId, token, from, to, message } =
       JSON.parse(decodedContent);
     return new CurrencyRequest(amount, chainId, token, from, to, message);

@@ -1,5 +1,5 @@
 import { WriteContractResult } from "@wagmi/core";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
@@ -23,12 +23,13 @@ export function useSendCurrency({
   to,
   onSendSuccess,
 }: UseSendCurrency) {
-  console.log({ tokenAddress, to });
   const chainTokens = chainId === 8453 ? baseTokens : [];
   const tokenDecimals = tokenAddress
     ? getTokenByAddress(chainTokens, tokenAddress)?.decimals
     : undefined;
-  const amountBN = amount && tokenDecimals && parseUnits(amount, tokenDecimals);
+  console.log({ tokenAddress, to, tokenDecimals, amount });
+
+  const amountBN = amount && BigInt(amount);
 
   const enabled = !!from && !!chainId && !!tokenAddress && !!from && !!to;
 

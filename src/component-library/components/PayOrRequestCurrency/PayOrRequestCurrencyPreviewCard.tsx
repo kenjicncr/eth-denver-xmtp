@@ -102,7 +102,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
           {isSenderRequestingCurrency && !isSelf && (
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               onClick={() => {}}>
               Pay
             </button>
@@ -110,7 +110,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
           {isSelf && (
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               onClick={() => {}}>
               You requested
             </button>

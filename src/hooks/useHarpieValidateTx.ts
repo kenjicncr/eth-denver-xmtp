@@ -7,7 +7,6 @@ const fetchHarpieValidation = async (
     value: number,
     data: `0x${string}`
 ) => {
-    // Construct the URL with your parameters
     try {
         const response = await fetch("https://api.harpie.io/v2/validateTransaction", {
             method: "POST",
@@ -26,9 +25,8 @@ const fetchHarpieValidation = async (
         return response.json();
     } catch (e) {
         console.error(e)
-        return undefined
+        Promise.reject(e)
     }
-
 };
 
 export function useHarpieValidateTx(
@@ -40,10 +38,12 @@ export function useHarpieValidateTx(
 ) {
     const { data: apiResponse, error, isError, isLoading, isSuccess } = useQuery(
         ['harpieValidateTx', { apiKey, from, to, value, data }],
-        () => fetchHarpieValidation(apiKey, from, to, value, data ),
+        () => fetchHarpieValidation(apiKey, from, to, value, data),
         {
             // Options like staleTime, cacheTime, refetchOnWindowFocus can be configured here
             enabled: !!apiKey && !!from && !!to && !!data, // Ensure all required params are not empty
+            refetchOnMount: false,
+            staleTime: Infinity, // Set staletime to infinity to prevent refetches forever
         }
     );
 

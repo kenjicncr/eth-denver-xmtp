@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { Combobox, Dialog, Transition } from "@headlessui/react";
 import { parseUnits } from "ethers/utils";
 
@@ -14,7 +14,7 @@ import { PlusCircleIcon } from "@heroicons/react/outline";
 import { ContactsCombobox } from "./ContactsCombobox";
 import { baseTokens } from "../../../tokens/base";
 import { HarpieAlert } from "./HarpieAlert";
-import { useHarpieValidateTx } from "../../../hooks/useHarpieValidateTx";
+import { useHarpieValidateAddress } from "../../../hooks/useHarpieValidateAddress";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -130,11 +130,12 @@ export const PayOrRequestCurrencyModal = ({
     }
   };
 
-  // const { apiResponse, error, isError, isLoading, isSuccess } = useHarpieValidateTx {
+  const checkAddress = resolvedAddress?.displayAddress as `0x${string}` | undefined;
+  console.log(checkAddress);
 
-  // };
-
-  console.log({ resolvedAddress });
+  const {
+    isMaliciousAddress
+  } = useHarpieValidateAddress(import.meta.env.VITE_HARPIE_KEY, resolvedAddress?.displayAddress as `0x${string}` | undefined)
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -164,7 +165,7 @@ export const PayOrRequestCurrencyModal = ({
 
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
 
-                <HarpieAlert isFlagged={true}></HarpieAlert>
+                {/* <HarpieAlert isFlagged={true}></HarpieAlert> */}
 
                 <Dialog.Title
                   as="h3"

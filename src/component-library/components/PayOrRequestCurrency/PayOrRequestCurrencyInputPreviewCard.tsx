@@ -1,7 +1,7 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { formatUnits } from "ethers";
-import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
+import { getTokenByAddress } from "../../../tokens/utils";
 import { tokens } from "../../../tokens/mainnet";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { baseTokens } from "../../../tokens/base";

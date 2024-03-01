@@ -49,7 +49,7 @@ import { PayOrRequestCurrencyInputPreviewCard } from "../PayOrRequestCurrency/Pa
 import { useCurrencyRequestModal } from "../../../hooks/useCurrencyRequestModal";
 import { useSendCurrency } from "../../../hooks/useSendCurrency";
 import { formatUnits, parseUnits } from "ethers";
-import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
+import { getTokenByAddress } from "../../../tokens/utils";
 import { baseTokens } from "../../../tokens/base";
 import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
 

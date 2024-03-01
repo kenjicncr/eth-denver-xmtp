@@ -10,8 +10,8 @@ interface MessageContentControllerProps {
 export const PayOrRequestCurrencyPreviewCard = ({
   isSelf,
   message,
-  currencyRequest,
 }: MessageContentControllerProps) => {
+  console.log({ message });
   return (
     <div className="relative m-8 w-fit">
       {isSelf ? "You sent a request to pay" : "You received a request to pay"}

@@ -18,6 +18,7 @@ import {
 import RemoteAttachmentMessageTile from "../component-library/components/RemoteAttachmentMessageTile/RemoteAttachmentMessageTile";
 import { ContentTypeCurrencyRequest } from "../xmtp-content-types/currency-request";
 import { PayOrRequestCurrencyPreviewCard } from "../component-library/components/PayOrRequestCurrency/PayOrRequestCurrencyPreviewCard";
+import { PaidCurrencyPreviewCard } from "../component-library/components/PayOrRequestCurrency/PaidCurrencyPreviewCard";
 
 interface MessageContentControllerProps {
   message: CachedMessage;
@@ -88,9 +89,7 @@ const MessageContentController = ({
   }
 
   if (contentType.sameAs(ContentTypeTransactionReference)) {
-    return (
-      <div>this is a transaction reference: {JSON.stringify(message)}</div>
-    );
+    return <PaidCurrencyPreviewCard message={message} isSelf={isSelf} />;
   }
   // message content type not supported, display fallback
   return <span>{message.contentFallback}</span>;

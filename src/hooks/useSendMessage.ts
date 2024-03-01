@@ -13,7 +13,10 @@ import {
   RemoteAttachmentCodec,
   AttachmentCodec,
 } from "@xmtp/content-type-remote-attachment";
-import { ContentTypeTransactionReference } from "@xmtp/content-type-transaction-reference";
+import {
+  ContentTypeTransactionReference,
+  TransactionReference,
+} from "@xmtp/content-type-transaction-reference";
 import { ContentTypeReply } from "@xmtp/content-type-reply";
 import type { Reply } from "@xmtp/content-type-reply";
 import * as Client from "@web3-storage/w3up-client";
@@ -26,7 +29,6 @@ import {
   CurrencyRequest,
 } from "../xmtp-content-types/currency-request";
 import { Transaction } from "dexie";
-import { TransactionReference } from "../xmtp-content-types/transaction-reference";
 
 const useSendMessage = (
   attachment?: Attachment,

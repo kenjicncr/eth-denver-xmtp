@@ -1,8 +1,10 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import { formatUnits } from "ethers";
-import { getTokenByAddress } from "../../../tokens/utils";
-import { tokens } from "../../../tokens/mainnet";
+import {
+  getTokenByAddress,
+  getTokenlistByChainId,
+} from "../../../tokens/utils";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { baseTokens } from "../../../tokens/base";
 
@@ -15,12 +17,14 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
   currencyRequest,
   onCancel,
 }: PayOrRequestCurrencyInputPreviewCardProps) => {
-  const tokens = baseTokens;
-  const token = currencyRequest
-    ? getTokenByAddress(tokens, currencyRequest?.token)
+  const tokenList = currencyRequest
+    ? getTokenlistByChainId(currencyRequest.chainId)
     : null;
 
-  const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
+  const token = tokenList?.[0];
+
+  const isDollar =
+    (token && token?.symbol === "USDC") || token?.symbol === "USDT";
 
   return (
     <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-black text-white rounded-3xl">

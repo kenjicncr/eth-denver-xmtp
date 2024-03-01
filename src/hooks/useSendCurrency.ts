@@ -1,6 +1,6 @@
 import { WriteContractResult } from "@wagmi/core";
-import { formatUnits, parseUnits } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { TransactionReceipt, formatUnits, parseUnits } from "viem";
+import { useAccount, useChainId, useWaitForTransaction } from "wagmi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import { erc20ABI } from "wagmi";
@@ -13,7 +13,7 @@ interface UseSendCurrency {
   tokenAddress: `0x${string}` | undefined;
   from: `0x${string}` | undefined;
   to: `0x${string}` | undefined;
-  onSendSuccess?: (data: WriteContractResult) => void;
+  onSendSuccess?: (data: TransactionReceipt) => void;
 }
 export function useSendCurrency({
   amount,
@@ -46,10 +46,15 @@ export function useSendCurrency({
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
+  });
+
+  const items = useWaitForTransaction({
+    hash: data?.hash,
     onSuccess(data) {
-      console.log("Success", data);
+      console.log("Successfully sent", data);
       onSendSuccess && onSendSuccess(data);
     },
+    enabled: !!data?.hash,
   });
 
   return { error, isError, isLoading, isSuccess, data, write };

@@ -10,7 +10,6 @@ import CurrencyInput, {
 import { RecipientAddress } from "../../../store/xmtp";
 import { Avatar } from "../Avatar/Avatar";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
-import { tokens } from "../../../tokens/mainnet";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import { ContactsCombobox } from "./ContactsCombobox";
 import { baseTokens } from "../../../tokens/base";
@@ -57,7 +56,6 @@ export const PayOrRequestCurrencyModal = ({
   onClose,
   onPay,
   onRequest,
-  onSend,
   resolvedAddress,
   avatarUrlProps,
   clientAddress,

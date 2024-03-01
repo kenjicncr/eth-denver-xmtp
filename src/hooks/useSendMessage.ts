@@ -13,6 +13,7 @@ import {
   RemoteAttachmentCodec,
   AttachmentCodec,
 } from "@xmtp/content-type-remote-attachment";
+import { ContentTypeTransactionReference } from "@xmtp/content-type-transaction-reference";
 import { ContentTypeReply } from "@xmtp/content-type-reply";
 import type { Reply } from "@xmtp/content-type-reply";
 import * as Client from "@web3-storage/w3up-client";
@@ -24,6 +25,8 @@ import {
   ContentTypeCurrencyRequest,
   CurrencyRequest,
 } from "../xmtp-content-types/currency-request";
+import { Transaction } from "dexie";
+import { TransactionReference } from "../xmtp-content-types/transaction-reference";
 
 const useSendMessage = (
   attachment?: Attachment,
@@ -35,8 +38,8 @@ const useSendMessage = (
   const sendMessage = useCallback(
     async (
       conversation: CachedConversation,
-      message: string | Attachment | CurrencyRequest,
-      type: "text" | "attachment" | "currencyRequest",
+      message: string | Attachment | CurrencyRequest | TransactionReference,
+      type: "text" | "attachment" | "currencyRequest" | "transactionReference",
     ) => {
       if (!recipientOnNetwork) {
         return;
@@ -120,14 +123,41 @@ const useSendMessage = (
             ContentTypeReply,
           );
         } else {
+          const _message = message as CurrencyRequest;
+          const currencyRequest: CurrencyRequest = {
+            chainId: _message.chainId,
+            amount: _message.amount,
+            token: _message.token,
+            from: _message.from,
+            to: _message.to,
+            message: _message.message,
+          };
+          void _sendMessage(
+            conversation,
+            currencyRequest,
+            ContentTypeCurrencyRequest,
+          );
+        }
+      } else if (type === "transactionReference") {
+        console.log("this is a transaction reference", message);
+        if (activeMessage?.xmtpID) {
+          console.log("replying a transaction reference");
           void _sendMessage(
             conversation,
             {
               reference: activeMessage?.xmtpID,
               content: message,
-              contentType: ContentTypeCurrencyRequest,
+              contentType: ContentTypeTransactionReference,
             },
-            ContentTypeCurrencyRequest,
+            ContentTypeReply,
+          );
+        } else {
+          const _message = message as TransactionReference;
+          console.log("sending a transaction reference...", _message);
+          void _sendMessage(
+            conversation,
+            _message,
+            ContentTypeTransactionReference,
           );
         }
       }

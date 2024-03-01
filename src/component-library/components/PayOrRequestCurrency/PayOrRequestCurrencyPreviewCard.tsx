@@ -1,7 +1,10 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
-import { getTokenByAddress } from "../../../tokens/utils";
+import {
+  getTokenByAddress,
+  getTokenlistByChainId,
+} from "../../../tokens/utils";
 import { mainnetTokens } from "../../../tokens/mainnet";
 import { formatUnits } from "viem";
 import { classNames } from "../../../helpers";
@@ -32,18 +35,15 @@ export const PayOrRequestCurrencyPreviewCard = ({
   isSelf,
   message,
 }: MessageContentControllerProps) => {
-  const content = isSelf ? message?.content?.content : message?.content;
+  const content = message?.content;
   if (!content.amount) return null;
   const currencyRequest = content as CurrencyRequest | null;
-
-  console.log({ content, isSelf });
 
   const isSenderRequestingCurrency =
     message?.senderAddress === currencyRequest?.to;
 
-  const token = currencyRequest
-    ? getTokenByAddress(mainnetTokens, currencyRequest?.token)
-    : null;
+  const tokenList = getTokenlistByChainId(currencyRequest?.chainId!);
+  const token = tokenList?.[0];
 
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
 

@@ -52,6 +52,7 @@ import { formatUnits, parseUnits } from "ethers";
 import { getTokenByAddress } from "../../../tokens/utils";
 import { baseTokens } from "../../../tokens/base";
 import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
+import { TransactionReference } from "../../../xmtp-content-types/transaction-reference";
 
 type InputProps = {
   /**
@@ -59,8 +60,8 @@ type InputProps = {
    */
   sendMessage: (
     conversation: CachedConversation,
-    msg: string | Attachment | CurrencyRequest,
-    type: "attachment" | "text" | "currencyRequest",
+    msg: string | Attachment | CurrencyRequest | TransactionReference,
+    type: "attachment" | "text" | "currencyRequest" | "transactionReference",
   ) => Promise<void>;
   startConversation: ReturnType<
     typeof useStartConversation
@@ -146,6 +147,7 @@ export const MessageInput = ({
     to: currRequest?.currencyRequest?.to,
     onSendSuccess: (data) => {
       console.log("succesfully sent  payment", data);
+      void send({ hash: data.transactionHash });
     },
   });
 
@@ -154,6 +156,7 @@ export const MessageInput = ({
   const onPayCurrency = (currencyRequest: CurrencyRequest) => {
     // sendCurrency.write?.();
     currRequest.setCurrencyRequest(currencyRequest);
+    currRequest.setCurrencyRequestType("pay");
     setShowConfirmPayment(true);
   };
 
@@ -237,73 +240,116 @@ export const MessageInput = ({
     status,
   });
 
-  const send = useCallback(async () => {
-    // the peerAddress check is for the type checker only
-    // it's not possible to send a message without a valid peerAddress
+  type OptionalSendParams = {
+    hash?: string;
+  };
 
-    if (peerAddress && (value || attachment || currRequest.currencyRequest)) {
-      // save reference to these values before clearing them from state
-      const val = value;
-      const attach = attachment;
+  const send = useCallback(
+    async (params?: OptionalSendParams) => {
+      // the peerAddress check is for the type checker only
+      // it's not possible to send a message without a valid peerAddress
 
-      setValue("");
-      setAttachment(undefined);
-      setAttachmentPreview(undefined);
-      currRequest.setCurrencyRequest(null);
-      currRequest.setCurrencyRequestNote("");
-      currRequest.setCurrencyRequestValue("0");
+      if (peerAddress && (value || attachment || currRequest.currencyRequest)) {
+        // save reference to these values before clearing them from state
+        const val = value;
+        const attach = attachment;
 
-      let convo = conversation;
-      if (!convo) {
-        // check for cached conversation with the same peer address
-        const existing = await getCachedByPeerAddress(peerAddress);
-        if (existing) {
-          convo = existing;
-        } else {
-          // create new conversation
-          const { cachedConversation } = await startConversation(
-            peerAddress,
-            undefined,
+        setValue("");
+        setAttachment(undefined);
+        setAttachmentPreview(undefined);
+        currRequest.setCurrencyRequest(null);
+        currRequest.setCurrencyRequestNote("");
+        currRequest.setCurrencyRequestValue("0");
+
+        let convo = conversation;
+        if (!convo) {
+          // check for cached conversation with the same peer address
+          const existing = await getCachedByPeerAddress(peerAddress);
+          if (existing) {
+            convo = existing;
+          } else {
+            // create new conversation
+            const { cachedConversation } = await startConversation(
+              peerAddress,
+              undefined,
+            );
+            convo = cachedConversation;
+          }
+          // select existing or new conversation
+          if (convo && conversationTopic !== convo.topic) {
+            setConversationTopic(convo.topic);
+          }
+        }
+        if (attach && convo) {
+          void sendMessage(convo, attach, "attachment");
+        }
+        if (val && convo) {
+          void sendMessage(convo, val, "text");
+        }
+
+        if (
+          currRequest.currencyRequest &&
+          convo &&
+          currRequest.currencyRequestType === "request"
+        ) {
+          console.log("sending currency request", currRequest.currencyRequest);
+          void sendMessage(
+            convo,
+            currRequest.currencyRequest,
+            "currencyRequest",
           );
-          convo = cachedConversation;
         }
-        // select existing or new conversation
-        if (convo && conversationTopic !== convo.topic) {
-          setConversationTopic(convo.topic);
-        }
-      }
-      if (attach && convo) {
-        void sendMessage(convo, attach, "attachment");
-      }
-      if (val && convo) {
-        void sendMessage(convo, val, "text");
-      }
 
-      if (currRequest.currencyRequest && convo) {
-        console.log("sending currency request", currRequest.currencyRequest);
-        void sendMessage(convo, currRequest.currencyRequest, "currencyRequest");
+        if (
+          currRequest.currencyRequest &&
+          convo &&
+          currRequest.currencyRequestType === "pay" &&
+          params?.hash &&
+          currRequest.currencyRequestToken
+        ) {
+          console.log(
+            "sending transaction reference",
+            currRequest.currencyRequest,
+          );
+          const transactionReference: TransactionReference = {
+            namespace: "eip155",
+            networkId: currRequest.currencyRequest.chainId,
+            reference: params.hash,
+            metadata: {
+              amount: Number(currRequest.currencyRequest.amount),
+              decimals: currRequest.currencyRequestToken?.decimals,
+              currency: currRequest.currencyRequestToken?.symbol,
+              fromAddress: currRequest.currencyRequest.from,
+              toAddress: currRequest.currencyRequest.to,
+              transactionType: "transfer",
+            },
+          };
+          void sendMessage(convo, transactionReference, "transactionReference");
+        }
+        // focus on message input after sending
+        textAreaRef.current?.focus();
       }
-      // focus on message input after sending
-      textAreaRef.current?.focus();
-    }
-  }, [
-    attachment,
-    conversation,
-    conversationTopic,
-    getCachedByPeerAddress,
-    peerAddress,
-    sendMessage,
-    setAttachment,
-    setAttachmentPreview,
-    setConversationTopic,
-    startConversation,
-    value,
-    currRequest.currencyRequest,
-  ]);
+    },
+    [
+      attachment,
+      conversation,
+      conversationTopic,
+      getCachedByPeerAddress,
+      peerAddress,
+      sendMessage,
+      setAttachment,
+      setAttachmentPreview,
+      setConversationTopic,
+      startConversation,
+      value,
+      currRequest.currencyRequest,
+    ],
+  );
 
   // send currency request
   const onRequestCurrency = (currencyRequest: CurrencyRequest) => {
     currRequest.setCurrencyRequest(currencyRequest);
+    currRequest.setCurrencyRequestType("request");
   };
 
   const handleLongPress = () => {
@@ -429,18 +475,19 @@ export const MessageInput = ({
             />
           </div>
         )}
-        {currRequest.currencyRequest && (
-          <div className="flex justify-center">
-            <PayOrRequestCurrencyInputPreviewCard
-              currencyRequest={currRequest.currencyRequest}
-              onCancel={() => {
-                currRequest.setCurrencyRequest(null);
-                currRequest.setCurrencyRequestNote("");
-                currRequest.setCurrencyRequestValue("0");
-              }}
-            />
-          </div>
-        )}
+        {currRequest.currencyRequest &&
+          currRequest.currencyRequestType === "request" && (
+            <div className="flex justify-center">
+              <PayOrRequestCurrencyInputPreviewCard
+                currencyRequest={currRequest.currencyRequest}
+                onCancel={() => {
+                  currRequest.setCurrencyRequest(null);
+                  currRequest.setCurrencyRequestNote("");
+                  currRequest.setCurrencyRequestValue("0");
+                }}
+              />
+            </div>
+          )}
         <div className="flex justify-between bg-gray-100 rounded-b-2xl px-2">
           <div className="flex flex-row">
             <PhotographIcon

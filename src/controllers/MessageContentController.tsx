@@ -6,6 +6,11 @@ import { ContentTypeRemoteAttachment } from "@xmtp/content-type-remote-attachmen
 import type { Reply } from "@xmtp/content-type-reply";
 import { ContentTypeReply } from "@xmtp/content-type-reply";
 import {
+  ContentTypeTransactionReference,
+  TransactionReferenceCodec,
+} from "@xmtp/content-type-transaction-reference";
+
+import {
   ContentTypeId,
   type CachedMessage,
   ContentTypeText,
@@ -77,12 +82,16 @@ const MessageContentController = ({
 
   // render currency request here
   if (contentType.sameAs(ContentTypeCurrencyRequest)) {
-    console.log("yo show this", message);
     return (
       <PayOrRequestCurrencyPreviewCard message={message} isSelf={isSelf} />
     );
   }
 
+  if (contentType.sameAs(ContentTypeTransactionReference)) {
+    return (
+      <div>this is a transaction reference: {JSON.stringify(message)}</div>
+    );
+  }
   // message content type not supported, display fallback
   return <span>{message.contentFallback}</span>;
 };

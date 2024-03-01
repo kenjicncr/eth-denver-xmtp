@@ -4,10 +4,38 @@ import {
   TransactionReferenceCodec,
 } from "@xmtp/content-type-transaction-reference";
 
+type TransactionReferenceTransactionType = "transfer";
+
+export interface TransactionReference {
+  /**
+   * Optional namespace for the networkId
+   */
+  namespace: string;
+  /**
+   * The networkId for the transaction, in decimal or hexidecimal format
+   */
+  networkId: number;
+  /**
+   * The transaction hash
+   */
+  reference: string;
+  /**
+   * Optional metadata object
+   */
+  metadata: {
+    transactionType: TransactionReferenceTransactionType;
+    currency: string;
+    amount: number; // In integer format, this represents 1 USDC (100000/10^6)
+    decimals: number; // Specifies that the currency uses 6 decimal places
+    fromAddress: string;
+    toAddress: string;
+  };
+}
+
 export const transactionReferenceContentTypeConfig: ContentTypeConfiguration = {
   codecs: [new TransactionReferenceCodec()],
   contentTypes: [ContentTypeTransactionReference.toString()],
-  namespace: "transactionReference", // Replace with the actual namespace you are using
+  namespace: "eip155", // Replace with the actual namespace you are using
   processors: {
     [ContentTypeTransactionReference.toString()]: [
       processTransactionReferenceRequest,

@@ -1,4 +1,4 @@
-import { Token } from "./mainnet";
+import { Token } from "./types";
 
 export const baseTokens: Token[] = [
   {

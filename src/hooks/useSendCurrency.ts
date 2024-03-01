@@ -4,7 +4,7 @@ import { useAccount, useChainId } from "wagmi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import { erc20ABI } from "wagmi";
-import { getTokenByAddress } from "../tokens/getTokenByAddress";
+import { getTokenByAddress } from "../tokens/utils";
 import { baseTokens } from "../tokens/base";
 
 interface UseSendCurrency {

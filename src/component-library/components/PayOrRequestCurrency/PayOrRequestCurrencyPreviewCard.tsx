@@ -1,8 +1,8 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
-import { getTokenByAddress } from "../../../tokens/getTokenByAddress";
-import { tokens } from "../../../tokens/mainnet";
+import { getTokenByAddress } from "../../../tokens/utils";
+import { mainnetTokens } from "../../../tokens/mainnet";
 import { formatUnits } from "viem";
 import { classNames } from "../../../helpers";
 
@@ -21,6 +21,7 @@ function getChainName(chainId: number) {
       return "Unknown Chain";
   }
 }
+
 interface MessageContentControllerProps {
   message?: CachedMessage;
   isSelf: boolean;
@@ -40,9 +41,8 @@ export const PayOrRequestCurrencyPreviewCard = ({
   const isSenderRequestingCurrency =
     message?.senderAddress === currencyRequest?.to;
 
-  const mainnetToken = tokens;
   const token = currencyRequest
-    ? getTokenByAddress(mainnetToken, currencyRequest?.token)
+    ? getTokenByAddress(mainnetTokens, currencyRequest?.token)
     : null;
 
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";

@@ -7,7 +7,7 @@ import {
 export const transactionReferenceContentTypeConfig: ContentTypeConfiguration = {
   codecs: [new TransactionReferenceCodec()],
   contentTypes: [ContentTypeTransactionReference.toString()],
-  namespace: "evmmio", // Replace with the actual namespace you are using
+  namespace: "transactionReference", // Replace with the actual namespace you are using
   processors: {
     [ContentTypeTransactionReference.toString()]: [
       processTransactionReferenceRequest,

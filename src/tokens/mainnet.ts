@@ -1,13 +1,6 @@
-export interface Token {
-  name: string;
-  address: string;
-  symbol: string;
-  decimals: number;
-  chainId: number;
-  logoURI: string;
-}
+import { Token } from "./types";
 
-export const tokens = [
+export const mainnetTokens: Token[] = [
   {
     name: "USDCoin",
     address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",

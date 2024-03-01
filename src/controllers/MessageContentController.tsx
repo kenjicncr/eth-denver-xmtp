@@ -11,6 +11,8 @@ import {
   ContentTypeText,
 } from "@xmtp/react-sdk";
 import RemoteAttachmentMessageTile from "../component-library/components/RemoteAttachmentMessageTile/RemoteAttachmentMessageTile";
+import { ContentTypeCurrencyRequest } from "../xmtp-content-types/currency-request";
+import { PayOrRequestCurrencyPreviewCard } from "../component-library/components/PayOrRequestCurrency/PayOrRequestCurrencyPreviewCard";
 
 interface MessageContentControllerProps {
   message: CachedMessage;
@@ -70,6 +72,13 @@ const MessageContentController = ({
     };
 
     return <MessageContentController message={newMessage} isSelf={isSelf} />;
+  }
+
+  // render currency request here
+  if (contentType.sameAs(ContentTypeCurrencyRequest)) {
+    return (
+      <PayOrRequestCurrencyPreviewCard message={message} isSelf={isSelf} />
+    );
   }
 
   // message content type not supported, display fallback

@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import { useState, Fragment, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { parseUnits } from "ethers/utils";
 
 import CurrencyInput, {
   CurrencyInputProps,
@@ -8,6 +9,8 @@ import CurrencyInput, {
 } from "react-currency-input-field";
 import { RecipientAddress } from "../../../store/xmtp";
 import { Avatar } from "../Avatar/Avatar";
+import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
+import { tokens } from "../../../tokens/mainnet";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -17,10 +20,11 @@ const shortenAddress = (address: string, chars = 4): string => {
 
 interface SendOrRequestCurrencyProps {
   onSend?: () => void;
-  onRequest?: () => void;
+  onRequest?: (currencyRequest: CurrencyRequest) => void;
   onOpen?: () => void;
   isOpen?: boolean;
   onClose?: () => void;
+  clientAddress?: string | null;
   /**
    * What, if any, resolved address is there?
    */
@@ -39,8 +43,12 @@ interface SendOrRequestCurrencyProps {
     // What's the address of this wallet?
     address?: string;
   };
+  value: string;
+  note: string;
+  onChangeValue: (value: string) => void;
+  onChangeNote: (note: string) => void;
 }
-export const SendOrRequestCurrency = ({
+export const PayOrRequestCurrencyModal = ({
   isOpen,
   onClose,
   onOpen,
@@ -48,24 +56,22 @@ export const SendOrRequestCurrency = ({
   onSend,
   resolvedAddress,
   avatarUrlProps,
+  clientAddress,
+  onChangeNote,
+  onChangeValue,
+  value,
+  note,
 }: SendOrRequestCurrencyProps) => {
+  const tokenList = tokens;
+  const USDC = tokenList[0];
   const prefix = "$";
-  const [value, setValue] = useState<string | number>(0);
+
   const [className, setClassName] = useState("");
 
-  const [values, setValues] = useState<CurrencyInputOnChangeValues>();
   const [errorMessage, setErrorMessage] = useState("");
   const [currencyInputWidth, setCurrencyInputWidth] = useState(0);
 
   const currencyInputRef = useRef(null);
-
-  useEffect(() => {
-    if (currencyInputRef.current) {
-      //@ts-ignore
-      setCurrencyInputWidth(currencyInputRef.current.offsetWidth);
-    }
-  }, [value]);
-
   /**
    * Handle validation
    */
@@ -74,22 +80,38 @@ export const SendOrRequestCurrency = ({
     name,
     _values,
   ) => {
-    // _values is only for demo purposes in this example
-    setValues(_values);
-
     if (!_value) {
       setClassName("");
-      setValue("");
+      onChangeValue("");
       return;
     }
 
     setClassName("is-valid");
-    setValue(_value);
+    onChangeValue(_value);
   };
 
   const closeModal = () => {
     onClose && onClose();
   };
+
+  const handleCurrencyRequest = () => {
+    if (onRequest) {
+      if (resolvedAddress?.displayAddress) {
+        const currencyRequest: CurrencyRequest = {
+          amount: parseUnits(value, USDC.decimals).toString(),
+          chainId: 1,
+          token: USDC.address as `0x${string}`,
+          from: resolvedAddress.displayAddress as `0x${string}`,
+          to: clientAddress as `0x${string}`,
+          message: note,
+        };
+        onRequest(currencyRequest);
+
+        closeModal();
+      }
+    }
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -147,6 +169,10 @@ export const SendOrRequestCurrency = ({
                 </div>
                 <div className="pt-32">
                   <input
+                    value={note}
+                    onChange={(e: any) =>
+                      onChangeNote && onChangeNote(e.target.value)
+                    }
                     className="border-[1px] border-gray-400 rounded-md w-full h-12 px-2"
                     placeholder="What's this for?"
                   />
@@ -155,7 +181,7 @@ export const SendOrRequestCurrency = ({
                   <button
                     type="button"
                     className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-800 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={closeModal}>
+                    onClick={handleCurrencyRequest}>
                     Request
                   </button>
                   <button

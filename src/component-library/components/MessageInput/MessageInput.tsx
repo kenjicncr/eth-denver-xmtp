@@ -26,8 +26,10 @@ import type {
 } from "@xmtp/react-sdk";
 import {
   useSendMessage as _useSendMessage,
+  useClient,
   useConversation,
 } from "@xmtp/react-sdk";
+import useSendMessage from "../../../hooks/useSendMessage";
 import { ContentTypeScreenEffect } from "@xmtp/experimental-content-type-screen-effect";
 import { IconButton } from "../IconButton/IconButton";
 import { useAttachmentChange } from "../../../hooks/useAttachmentChange";
@@ -40,7 +42,10 @@ import { useRecordingTimer } from "../../../hooks/useRecordingTimer";
 import "react-tooltip/dist/react-tooltip.css";
 import { useLongPress } from "../../../hooks/useLongPress";
 import { EffectDialog } from "../EffectDialog/EffectDialog";
-import { SendOrRequestCurrency } from "../SendOrRequestCurrency/SendOrRequestCurrency";
+import { PayOrRequestCurrencyModal } from "../PayOrRequestCurrency/PayOrRequestCurrencyModal";
+import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
+import { PayOrRequestCurrencyPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyPreviewCard";
+import { PayOrRequestCurrencyInputPreviewCard } from "../PayOrRequestCurrency/PayOrRequestCurrencyInputPreviewCard";
 
 type InputProps = {
   /**
@@ -48,8 +53,8 @@ type InputProps = {
    */
   sendMessage: (
     conversation: CachedConversation,
-    msg: string | Attachment,
-    type: "attachment" | "text",
+    msg: string | Attachment | CurrencyRequest,
+    type: "attachment" | "text" | "currencyRequest",
   ) => Promise<void>;
   startConversation: ReturnType<
     typeof useStartConversation
@@ -100,6 +105,9 @@ export const MessageInput = ({
   const { getCachedByPeerAddress } = useConversation();
   // For effects
   const { sendMessage: _sendMessage } = _useSendMessage();
+  const { client } = useClient();
+  const senderAddress = client?.address;
+
   const [openEffectDialog, setOpenEffectDialog] = useState(false);
   const [openSendOrRequestCurrency, setOpenSendOrRequestCurrency] =
     useState(false);
@@ -107,6 +115,10 @@ export const MessageInput = ({
   const { t } = useTranslation();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState("");
+  const [currencyRequestValue, setCurrencyRequestValue] = useState("");
+  const [currencyRequestNote, setCurrencyRequestNote] = useState("");
+  const [currencyRequest, setCurrencyRequest] =
+    useState<CurrencyRequest | null>(null);
   const [acceptedTypes, setAcceptedTypes]: [
     string | string[] | undefined,
     Dispatch<SetStateAction<string | string[] | undefined>>,
@@ -199,7 +211,8 @@ export const MessageInput = ({
   const send = useCallback(async () => {
     // the peerAddress check is for the type checker only
     // it's not possible to send a message without a valid peerAddress
-    if (peerAddress && (value || attachment)) {
+
+    if (peerAddress && (value || attachment || currencyRequest)) {
       // save reference to these values before clearing them from state
       const val = value;
       const attach = attachment;
@@ -233,6 +246,11 @@ export const MessageInput = ({
       if (val && convo) {
         void sendMessage(convo, val, "text");
       }
+
+      if (currencyRequest && convo) {
+        console.log("sending currency request", currencyRequest);
+        void sendMessage(convo, currencyRequest, "currencyRequest");
+      }
       // focus on message input after sending
       textAreaRef.current?.focus();
     }
@@ -248,7 +266,13 @@ export const MessageInput = ({
     setConversationTopic,
     startConversation,
     value,
+    currencyRequest,
   ]);
+
+  // send currency request
+  const onRequestCurrency = (currencyRequest: CurrencyRequest) => {
+    setCurrencyRequest(currencyRequest);
+  };
 
   const handleLongPress = () => {
     setOpenEffectDialog(true);
@@ -373,6 +397,18 @@ export const MessageInput = ({
             />
           </div>
         )}
+        {currencyRequest && (
+          <div className="flex justify-center">
+            <PayOrRequestCurrencyInputPreviewCard
+              currencyRequest={currencyRequest}
+              onCancel={() => {
+                setCurrencyRequest(null);
+                setCurrencyRequestNote("");
+                setCurrencyRequestValue("0");
+              }}
+            />
+          </div>
+        )}
         <div className="flex justify-between bg-gray-100 rounded-b-2xl px-2">
           <div className="flex flex-row">
             <PhotographIcon
@@ -456,7 +492,7 @@ export const MessageInput = ({
               label={<ArrowUpIcon color="white" width="20" />}
               srText={t("aria_labels.submit_message") || ""}
               isDisabled={
-                !(value || attachmentPreview) ||
+                !(value || attachmentPreview || currencyRequest) ||
                 isDisabled ||
                 !!attachmentError ||
                 openEffectDialog
@@ -465,8 +501,9 @@ export const MessageInput = ({
           </div>
         </div>
       </form>
-      <SendOrRequestCurrency
+      <PayOrRequestCurrencyModal
         onClose={() => setOpenSendOrRequestCurrency(false)}
+        clientAddress={senderAddress}
         isOpen={openSendOrRequestCurrency}
         resolvedAddress={{
           displayAddress: recipientName ?? recipientAddress ?? "",
@@ -474,6 +511,11 @@ export const MessageInput = ({
             ? recipientAddress ?? undefined
             : undefined,
         }}
+        note={currencyRequestNote}
+        value={currencyRequestValue}
+        onChangeNote={(note) => setCurrencyRequestNote(note)}
+        onChangeValue={(value) => setCurrencyRequestValue(value)}
+        onRequest={(request) => onRequestCurrency(request)}
         avatarUrlProps={{
           url: recipientAvatar || "",
           isLoading: recipientState === "loading",

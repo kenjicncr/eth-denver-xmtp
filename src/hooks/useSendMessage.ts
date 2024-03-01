@@ -20,6 +20,10 @@ import * as Signer from "@ucanto/principal/ed25519";
 import Upload from "../helpers/classes/Upload";
 import { useXmtpStore } from "../store/xmtp";
 import { parseProof } from "../helpers/attachments";
+import {
+  ContentTypeCurrencyRequest,
+  CurrencyRequest,
+} from "../xmtp-content-types/currency-request";
 
 const useSendMessage = (
   attachment?: Attachment,
@@ -31,8 +35,8 @@ const useSendMessage = (
   const sendMessage = useCallback(
     async (
       conversation: CachedConversation,
-      message: string | Attachment,
-      type: "text" | "attachment",
+      message: string | Attachment | CurrencyRequest,
+      type: "text" | "attachment" | "currencyRequest",
     ) => {
       if (!recipientOnNetwork) {
         return;
@@ -101,6 +105,30 @@ const useSendMessage = (
           );
         } else {
           void _sendMessage(conversation, message);
+        }
+      } else if (type === "currencyRequest") {
+        console.log("this is a currency request", message);
+        if (activeMessage?.xmtpID) {
+          console.log("curency requesting...");
+          void _sendMessage(
+            conversation,
+            {
+              reference: activeMessage?.xmtpID,
+              content: message,
+              contentType: ContentTypeCurrencyRequest,
+            } satisfies Reply,
+            ContentTypeReply,
+          );
+        } else {
+          void _sendMessage(
+            conversation,
+            {
+              reference: activeMessage?.xmtpID,
+              content: message,
+              contentType: ContentTypeCurrencyRequest,
+            },
+            ContentTypeCurrencyRequest,
+          );
         }
       }
     },

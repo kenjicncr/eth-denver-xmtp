@@ -90,7 +90,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
     : null;
 
   useEffect(() => {
-    if (replies) {
+    if (replies && token) {
       const matchingReply = findMatchingReply(replies, currencyRequest, token);
       if (matchingReply) {
         setIsPaid(true);
@@ -98,7 +98,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
         setIsPaid(false);
       }
     }
-  }, [replies]);
+  }, [replies, token]);
 
   const send = useCallback((data: TransactionReceipt) => {
     if (

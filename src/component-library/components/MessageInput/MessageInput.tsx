@@ -52,7 +52,7 @@ import { formatUnits, parseUnits } from "ethers";
 import { getTokenByAddress } from "../../../tokens/utils";
 import { baseTokens } from "../../../tokens/base";
 import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
-import { TransactionReference } from "../../../xmtp-content-types/transaction-reference";
+import { TransactionReference } from "@xmtp/content-type-transaction-reference";
 
 type InputProps = {
   /**

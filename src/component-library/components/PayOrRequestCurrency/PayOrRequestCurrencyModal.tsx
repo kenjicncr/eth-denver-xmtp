@@ -14,6 +14,7 @@ import { PlusCircleIcon } from "@heroicons/react/outline";
 import { ContactsCombobox } from "./ContactsCombobox";
 import { baseTokens } from "../../../tokens/base";
 import { HarpieAlert } from "./HarpieAlert";
+import { useHarpieValidateTx } from "../../../hooks/useHarpieValidateTx";
 
 const shortenAddress = (address: string, chars = 4): string => {
   const prefix = address.slice(0, chars);
@@ -129,7 +130,9 @@ export const PayOrRequestCurrencyModal = ({
     }
   };
 
-  
+  // const { apiResponse, error, isError, isLoading, isSuccess } = useHarpieValidateTx {
+
+  // };
 
   console.log({ resolvedAddress });
 

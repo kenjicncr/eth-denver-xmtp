@@ -23,6 +23,7 @@ import type {
   CachedConversationWithId,
   CachedConversation,
   useStartConversation,
+  CachedMessage,
 } from "@xmtp/react-sdk";
 import {
   useSendMessage as _useSendMessage,
@@ -139,6 +140,7 @@ export const MessageInput = ({
     receiverAddress: recipientAddress,
   });
 
+  // can probably move this to parent component
   const sendCurrency = useSendCurrency({
     amount: currRequest?.currencyRequest?.amount,
     chainId: currRequest?.currencyRequest?.chainId,

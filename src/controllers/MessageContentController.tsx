@@ -35,7 +35,6 @@ const MessageContentController = ({
   });
 
   const contentType = ContentTypeId.fromString(message.contentType);
-  console.log({ message, contentType, isSelf });
 
   if (contentType.sameAs(ContentTypeText)) {
     const content = message.content as string;

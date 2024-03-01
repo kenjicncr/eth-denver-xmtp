@@ -1,13 +1,32 @@
-import { CachedMessage } from "@xmtp/react-sdk";
+import {
+  CachedMessage,
+  CachedMessageWithId,
+  useReplies,
+  useSendMessage,
+} from "@xmtp/react-sdk";
+import { getReplies } from "@xmtp/react-sdk";
 
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
 import {
+  findMatchingReply,
   getTokenByAddress,
   getTokenlistByChainId,
 } from "../../../tokens/utils";
-import { mainnetTokens } from "../../../tokens/mainnet";
+import { useClient, useConversation } from "@xmtp/react-sdk";
+import { ContentTypeReply, Reply } from "@xmtp/content-type-reply";
 import { formatUnits } from "viem";
+
 import { classNames } from "../../../helpers";
+import { useXmtpStore } from "../../../store/xmtp";
+import { useSendCurrency } from "../../../hooks/useSendCurrency";
+import { TransactionReceipt } from "viem";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  TransactionReference,
+  ContentTypeTransactionReference,
+} from "@xmtp/content-type-transaction-reference";
+import { Token } from "../../../tokens/types";
+import useSelectedConversation from "../../../hooks/useSelectedConversation";
 
 function getChainName(chainId: number) {
   switch (chainId) {
@@ -28,22 +47,103 @@ function getChainName(chainId: number) {
 interface MessageContentControllerProps {
   message?: CachedMessage;
   isSelf: boolean;
-  currencyRequest?: CurrencyRequest;
+  onPayMessageClick?: (
+    message: CachedMessage | undefined,
+    currencyRequest: CurrencyRequest | null,
+  ) => void;
+  onSuccessPayment?: (data: TransactionReceipt) => void;
 }
 
 export const PayOrRequestCurrencyPreviewCard = ({
   isSelf,
   message,
+  onPayMessageClick,
+  onSuccessPayment,
 }: MessageContentControllerProps) => {
   const content = message?.content;
   if (!content.amount) return null;
   const currencyRequest = content as CurrencyRequest | null;
+  const [isPaid, setIsPaid] = useState(false);
+  const replies = useReplies(message);
+
+  const sendCurrency = useSendCurrency({
+    amount: currencyRequest?.amount,
+    chainId: currencyRequest?.chainId,
+    tokenAddress: currencyRequest?.token,
+    from: currencyRequest?.from,
+    to: currencyRequest?.to,
+    onSendSuccess: (data) => {
+      console.log("succesfully sent  payment", data);
+      // void send({ hash: data.transactionHash });
+      onSuccessPayment && onSuccessPayment(data);
+      void send(data);
+    },
+  });
+
+  const setActiveMessage = useXmtpStore((state) => state.setActiveMessage);
+  const { sendMessage, isLoading, error } = useSendMessage();
+  const conversation = useSelectedConversation();
+
+  const tokenList = getTokenlistByChainId(currencyRequest?.chainId!);
+  const token: Token | undefined | null = tokenList
+    ? getTokenByAddress(tokenList, currencyRequest?.token as `0x${string}`)
+    : null;
+
+  useEffect(() => {
+    if (replies) {
+      const matchingReply = findMatchingReply(replies, currencyRequest, token);
+      if (matchingReply) {
+        setIsPaid(true);
+      } else {
+        setIsPaid(false);
+      }
+    }
+  }, [replies]);
+
+  const send = useCallback((data: TransactionReceipt) => {
+    if (
+      currencyRequest &&
+      data?.transactionHash &&
+      currencyRequest.token &&
+      token &&
+      conversation
+    ) {
+      const transactionReference: TransactionReference = {
+        namespace: "eip155",
+        networkId: currencyRequest.chainId,
+        reference: data.transactionHash,
+        metadata: {
+          amount: Number(currencyRequest.amount),
+          currency: token?.symbol,
+          fromAddress: currencyRequest.from,
+          toAddress: currencyRequest.to,
+          transactionType: "transfer",
+          decimals: token?.decimals,
+        },
+      };
+
+      const replyContent: Reply = {
+        reference: message?.xmtpID!,
+        contentType: ContentTypeTransactionReference,
+        content: transactionReference,
+      };
+      void sendMessage(conversation, replyContent, ContentTypeReply);
+    }
+  }, []);
+
+  const handleOnPayMessageClick = (
+    message: CachedMessage | undefined,
+    currencyRequest: CurrencyRequest | null,
+  ) => {
+    if (message) {
+      setActiveMessage(message as CachedMessageWithId);
+      onPayMessageClick && onPayMessageClick(message, currencyRequest);
+      sendCurrency.write?.();
+    }
+  };
 
   const isSenderRequestingCurrency =
     message?.senderAddress === currencyRequest?.to;
-
-  const tokenList = getTokenlistByChainId(currencyRequest?.chainId!);
-  const token = tokenList?.[0];
 
   const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
 
@@ -102,9 +202,13 @@ export const PayOrRequestCurrencyPreviewCard = ({
           {isSenderRequestingCurrency && !isSelf && (
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              onClick={() => {}}>
-              Pay
+              className={classNames(
+                "w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                isPaid ? "bg-gray-400 hover:bg-gray-600" : "",
+              )}
+              onClick={() => handleOnPayMessageClick(message, currencyRequest)}
+              disabled={isPaid}>
+              {isPaid ? `Paid` : `Pay`}
             </button>
           )}
           {isSelf && (

@@ -112,15 +112,22 @@ const useSendMessage = (
           void _sendMessage(conversation, message);
         }
       } else if (type === "currencyRequest") {
-        console.log("this is a currency request", message);
         if (activeMessage?.xmtpID) {
-          console.log("curency requesting...");
+          const _message = message as CurrencyRequest;
+          const currencyRequest: CurrencyRequest = {
+            chainId: _message.chainId,
+            amount: _message.amount,
+            token: _message.token,
+            from: _message.from,
+            to: _message.to,
+            message: _message.message,
+          };
           void _sendMessage(
             conversation,
             {
               reference: activeMessage?.xmtpID,
-              content: message,
-              contentType: ContentTypeCurrencyRequest,
+              content: currencyRequest,
+              contentType: ContentTypeText,
             } satisfies Reply,
             ContentTypeReply,
           );
@@ -150,7 +157,7 @@ const useSendMessage = (
               reference: activeMessage?.xmtpID,
               content: message,
               contentType: ContentTypeTransactionReference,
-            },
+            } satisfies Reply,
             ContentTypeReply,
           );
         } else {

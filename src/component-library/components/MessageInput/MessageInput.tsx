@@ -163,6 +163,7 @@ export const MessageInput = ({
   };
 
   const handleConfirmPayment = () => {
+    console.log({ currRequest });
     sendCurrency.write?.();
     setShowConfirmPayment(false);
   };

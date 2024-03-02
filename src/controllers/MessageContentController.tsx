@@ -38,6 +38,13 @@ const MessageContentController = ({
 
   if (contentType.sameAs(ContentTypeText)) {
     const content = message.content as string;
+    const isObject = typeof content === "object";
+    if (isObject) {
+      return (
+        <PayOrRequestCurrencyPreviewCard message={message} isSelf={isSelf} />
+      );
+    }
+
     return (
       <span className="interweave-content" data-testid="message-tile-text">
         <Interweave

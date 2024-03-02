@@ -64,7 +64,7 @@ interface MessagePreviewCardProps {
 
 export const MessagePreviewCard = ({
   avatarUrl,
-  text,
+  text: _text,
   displayAddress,
   address,
   datetime,
@@ -78,6 +78,9 @@ export const MessagePreviewCard = ({
   allow,
 }: MessagePreviewCardProps) => {
   const { t } = useTranslation();
+
+  const isObject = typeof _text === "object";
+  const text = isObject ? JSON.stringify(_text) : _text;
 
   return (
     <div

@@ -99,7 +99,7 @@ export const PayOrRequestCurrencyModal = ({
           chainId: 8453,
           token: USDC.address as `0x${string}`,
           from:
-            resolvedAddress.displayAddress && resolvedAddress.displayAddress
+            resolvedAddress.displayAddress && resolvedAddress.walletAddress
               ? (resolvedAddress.walletAddress as `0x${string}`)
               : (resolvedAddress.displayAddress as `0x${string}`),
           to: clientAddress as `0x${string}`,
@@ -115,12 +115,13 @@ export const PayOrRequestCurrencyModal = ({
   const handlePayRequest = () => {
     if (onPay) {
       if (resolvedAddress?.displayAddress) {
+        console.log({ resolvedAddress });
         const currencyRequest: CurrencyRequest = {
           amount: parseUnits(value, USDC.decimals).toString(),
           chainId: 8453,
           token: USDC.address as `0x${string}`,
           to:
-            resolvedAddress.displayAddress && resolvedAddress.displayAddress
+            resolvedAddress.displayAddress && resolvedAddress.walletAddress
               ? (resolvedAddress.walletAddress as `0x${string}`)
               : (resolvedAddress.displayAddress as `0x${string}`),
           from: clientAddress as `0x${string}`,

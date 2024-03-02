@@ -35,6 +35,8 @@ export const PaidCurrencyPreviewCard = ({
 
   const isDollar = transactionReference.metadata?.decimals === 6;
 
+  console.log({ transactionReference });
+
   const amount =
     transactionReference?.metadata !== undefined
       ? Number(
@@ -69,12 +71,12 @@ export const PaidCurrencyPreviewCard = ({
             <span className="font-bold">
               {isDollar
                 ? `$${amount}`
-                : `${amount} ${transactionReference?.metadata?.currency}` ||
-                  "0"}
+                : `${amount} ${transactionReference?.metadata?.currency}`}
             </span>
           </p>
           {transactionReference && (
             <p className="text-center text-sm">
+              on{" "}
               {transactionReference?.networkId &&
                 getChainByChainId(transactionReference?.networkId as number)
                   ?.name}

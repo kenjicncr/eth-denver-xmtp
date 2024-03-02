@@ -11,7 +11,7 @@ export const moonbeamTokens: Array<Token> = [
   },
   {
     name: "Native GLMR",
-    address: "0xAcc15dC74880C9944775448304B263D191c6077F",
+    address: "0x0000000000000000000000000000000000000802",
     symbol: "GLMR",
     decimals: 18,
     chainId: 1284,

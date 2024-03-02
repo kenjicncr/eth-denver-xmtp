@@ -142,6 +142,8 @@ export const MessageInput = ({
     receiverAddress: recipientAddress,
   });
 
+  console.log({ currRequest });
+
   const contactSelectorDisclosure = useDisclosure();
 
   // can probably move this to parent component
@@ -325,6 +327,7 @@ export const MessageInput = ({
               transactionType: "transfer",
             },
           };
+          console.log({ transactionReference });
           void sendMessage(convo, transactionReference, "transactionReference");
         }
         // focus on message input after sending

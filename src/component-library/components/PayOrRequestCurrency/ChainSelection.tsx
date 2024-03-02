@@ -13,7 +13,7 @@ export const ChainSelection = () => {
   };
 
   return (
-    <div className="flex relative mt-2">
+    <div className="w-full relative mt-2 mr-8">
       {chain ? (
         <Listbox value={chain} onChange={({ id }) => handleSwitchNetwork(id)}>
           <Listbox.Button className="relative w-full min-w-[100px] text-center cursor-pointer rounded-lg border bg-zinc-800 py-2 px-8 shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">

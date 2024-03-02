@@ -42,7 +42,6 @@ export class ContentTypeSendCurrencyCodec
     return ContentTypeCurrencyRequest;
   }
   encode(req: any): EncodedContent {
-    console.log({ req });
     const { amount, chainId, token, from, to, message } = req;
     return {
       type: ContentTypeCurrencyRequest,

@@ -146,7 +146,6 @@ export const MessageInput = ({
     from: currRequest?.currencyRequest?.from,
     to: currRequest?.currencyRequest?.to,
     onSendSuccess: (data) => {
-      console.log("succesfully sent  payment", data);
       void send({ hash: data.transactionHash });
     },
   });
@@ -292,7 +291,6 @@ export const MessageInput = ({
           convo &&
           currRequest.currencyRequestType === "request"
         ) {
-          console.log("sending currency request", currRequest.currencyRequest);
           void sendMessage(
             convo,
             currRequest.currencyRequest,
@@ -307,10 +305,6 @@ export const MessageInput = ({
           params?.hash &&
           currRequest.currencyRequestToken
         ) {
-          console.log(
-            "sending transaction reference",
-            currRequest.currencyRequest,
-          );
           const transactionReference: TransactionReference = {
             namespace: "eip155",
             networkId: currRequest.currencyRequest.chainId,

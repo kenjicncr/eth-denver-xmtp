@@ -4,12 +4,10 @@ const fetchHarpieValidation = async (
     apiKey: string,
     address: `0x${string}` | undefined
 ) => {
-    console.log(`FETCHING: ${address}`)
     try {
         const response = await fetch("https://api.harpie.io/v2/validateAddress", {
             method: "POST",
             headers: {
-                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -28,7 +26,6 @@ export function useHarpieValidateAddress(
     apiKey: string,
     address: `0x${string}` | undefined
 ) {
-    console.log(address);
     const { data: apiResponse, error, isError, isLoading, isSuccess } = useQuery(
         ['harpieValidateAddress', { apiKey, address }],
         () => fetchHarpieValidation(apiKey, address),
@@ -39,8 +36,6 @@ export function useHarpieValidateAddress(
             staleTime: Infinity, // Set staletime to infinity to prevent refetches forever
         }
     );
-
-    console.log(apiResponse);
 
     const { isMaliciousAddress } = apiResponse ?? false;
 

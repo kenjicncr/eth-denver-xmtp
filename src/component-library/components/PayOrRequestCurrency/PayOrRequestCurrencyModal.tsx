@@ -131,7 +131,6 @@ export const PayOrRequestCurrencyModal = ({
   };
 
   const checkAddress = resolvedAddress?.displayAddress as `0x${string}` | undefined;
-  console.log(checkAddress);
 
   const {
     isMaliciousAddress
@@ -165,7 +164,7 @@ export const PayOrRequestCurrencyModal = ({
 
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
 
-                {/* <HarpieAlert isFlagged={true}></HarpieAlert> */}
+                <HarpieAlert isFlagged={isMaliciousAddress}></HarpieAlert>
 
                 <Dialog.Title
                   as="h3"

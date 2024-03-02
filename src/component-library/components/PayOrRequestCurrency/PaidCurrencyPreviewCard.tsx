@@ -86,7 +86,9 @@ export const PaidCurrencyPreviewCard = ({
                 referenceChain
                   ? `${referenceChain.blockExplorers?.default?.url}/tx/${transactionReference?.reference}`
                   : undefined
-              }>
+              }
+              target="_blank"
+              rel="noreferrer">
               View transaction
             </a>
           </Button>

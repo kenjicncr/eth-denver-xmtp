@@ -190,8 +190,15 @@ export const PayOrRequestCurrencyModal = ({
                   Request or pay money
                 </Dialog.Title>
 
-                <div className="flex justify-center">
-                  <ChainSelection />
+                <div className="flex justify-between mt-8">
+                  <ChainSelection/>
+                  <TokenDropDown
+                    tokens={tokenList}
+                    onSelectToken={(token) => {
+                      setSelectedToken(token);
+                    }}
+                    selectedToken={token}
+                  />
                 </div>
 
                 <div className="mt-12 flex items-center justify-center flex-col">
@@ -208,13 +215,6 @@ export const PayOrRequestCurrencyModal = ({
                     style={{
                       boxShadow: `unset`,
                     }}
-                  />
-                  <TokenDropDown
-                    tokens={tokenList}
-                    onSelectToken={(token) => {
-                      setSelectedToken(token);
-                    }}
-                    selectedToken={token}
                   />
                 </div>
                 <div className="pt-16">

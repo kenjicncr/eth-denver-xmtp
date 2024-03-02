@@ -39,7 +39,7 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
   const isDollar = token && token?.decimals === 6;
 
   return (
-    <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-black text-white rounded-3xl">
+    <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-zinc-800 text-white rounded-3xl">
       <div className="absolute top-1 right-1">
         <button onClick={onCancel}>
           <XCircleIcon height={40} width={40} />

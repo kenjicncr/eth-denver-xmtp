@@ -5,6 +5,7 @@ import { GhostButton } from "../GhostButton/GhostButton";
 import { DisconnectIcon } from "../Icons/DisconnectIcon";
 import { logoSvg as Logo } from "./logo";
 import { PillButton } from "../PillButton/PillButton";
+import xmTpay from "../../../../public/xmtpay.png";
 
 interface OnboardingStepProps {
   /**
@@ -50,8 +51,10 @@ export const OnboardingStep = ({
   if (stepInfo) {
     const { header, subheader, cta, subtext, disconnect_tip } = stepInfo;
 
+    const isFirst = step === 0;
+
     return (
-      <div className="bg-background flex flex-col justify-around items-center max-w-sm text-center m-auto w-screen p-4 h-screen">
+      <div className="relative bg-background flex flex-col justify-around items-center max-w-sm text-center m-auto w-screen p-4 h-screen">
         {isLoading ? (
           <Spinner />
         ) : (
@@ -72,6 +75,17 @@ export const OnboardingStep = ({
             className="text-lg"
             data-testid={step === 1 && "no-wallet-connected-subheader"}>
             <Trans i18nKey={subheader ?? ""} />
+          </p>
+          <p className="mt-4 text-xs flex items-center justify-center text-center w-full">
+            {" "}
+            by XMTPay{" "}
+            <img
+              className="display-inline"
+              src={xmTpay}
+              alt="xmtpay"
+              width="25px"
+              height="25px"
+            />
           </p>
           <div>
             {cta === ctaStep.ENABLE ? (

@@ -2,7 +2,7 @@
   "onboarding": {
     "demo_header": "Initializing demo mode…",
     "intro_header": "An interoperable web3 inbox",
-    "intro_subheader": "Access all of your XMTP DMs—no matter where you started them.",
+    "intro_subheader": "Now powered with money transfers right in your conversations",
     "intro_button": "Connect your wallet",
     "connect_header": "Connecting to your wallet...",
     "connect_subheader": "Select a wallet account to use to create your XMTP identity. Then allow this app to connect to the account.",

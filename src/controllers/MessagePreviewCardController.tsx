@@ -28,6 +28,7 @@ import {
   ContentTypeCurrencyRequest,
   CurrencyRequest,
 } from "../xmtp-content-types/currency-request";
+import { formatUnits, parseUnits } from "viem";
 
 interface MessagePreviewCardControllerProps {
   convo: CachedConversation;
@@ -136,10 +137,12 @@ export const MessagePreviewCardController = ({
       }
 
       if (ContentTypeCurrencyRequest.sameAs(previewContentType)) {
-        return (
-          (previewContent as CurrencyRequest).amount ??
-          (t("messages.currency_request") || "Currency Request")
-        );
+        const content = previewContent as CurrencyRequest;
+        // hard coded for now
+        const amount = formatUnits(BigInt(content.amount), 6);
+        const isSelf = lastMessage.senderAddress === content.to;
+
+        return `$${amount} currency request`;
       }
 
       return lastMessage.contentFallback ?? t("messages.no_preview");

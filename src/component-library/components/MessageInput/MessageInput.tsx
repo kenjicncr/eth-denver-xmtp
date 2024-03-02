@@ -347,7 +347,6 @@ export const MessageInput = ({
       startConversation,
       value,
       currRequest.currencyRequest,
-      currRequest,
     ],
   );
 

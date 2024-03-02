@@ -34,7 +34,8 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
     ? getTokenlistByChainId(currencyRequest.chainId)
     : null;
 
-  const token = tokenList?.[0];
+  const token =
+    tokenList && getTokenByAddress(tokenList, currencyRequest.token);
 
   const isDollar = token && token?.decimals === 6;
 
@@ -56,7 +57,7 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
                 ).toLocaleString()}`
               : `${Number(
                   formatUnits(currencyRequest.amount, token?.decimals),
-                ).toLocaleString()}{" "}
+                ).toLocaleString()}
             ${token?.symbol}`}
           </span>
         </p>

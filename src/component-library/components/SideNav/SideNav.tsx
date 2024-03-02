@@ -264,7 +264,7 @@ const SideNav = ({
           as="div"
           onClose={onXmtpIconClick}
           aria-label={t("menu.settings") || ""}>
-          <div className="bg-gray-50 w-fit rounded-lg absolute bottom-16 left-12 p-2 z-50">
+          <div className="bg-zinc-900 w-fit rounded-lg absolute bottom-16 left-12 p-2 z-50">
             <div className="max-h-80 overflow-auto">
               {mappedLangs.map(({ displayText, isSelected, lang }) => (
                 <div className="flex p-2 justify-between" key={lang}>

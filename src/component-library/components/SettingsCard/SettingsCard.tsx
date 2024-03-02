@@ -55,7 +55,7 @@ export const SettingsCard = ({
   <div
     className={classNames(
       "w-full",
-      "bg-gray-50",
+      "bg-zinc-900",
       "p-4",
       "flex",
       "justify-between",

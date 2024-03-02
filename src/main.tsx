@@ -6,6 +6,7 @@ import {
   connectorsForWallets,
   getDefaultWallets,
   RainbowKitProvider,
+  darkTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { trustWallet } from "@rainbow-me/rainbowkit/wallets";
@@ -98,7 +99,7 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <WagmiConfig config={isAppEnvDemo() ? wagmiDemoConfig : wagmiConfig}>
-    <RainbowKitProvider chains={chains}>
+    <RainbowKitProvider chains={chains} theme={darkTheme()}>
       <QueryClientProvider client={queryClient}>
         <StrictMode>
           <XMTPProvider

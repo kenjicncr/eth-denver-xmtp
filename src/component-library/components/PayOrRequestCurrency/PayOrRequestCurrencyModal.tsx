@@ -196,20 +196,20 @@ export const PayOrRequestCurrencyModal = ({
                     onChange={(e: any) =>
                       onChangeNote && onChangeNote(e.target.value)
                     }
-                    className="border-[1px] border-zinc-800 rounded-lg w-full h-12 px-2 bg-background"
+                    className="border-[1px] border-zinc-800 rounded-lg w-full h-12 px-2 bg-background focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-600"
                     placeholder="What's this for?"
                   />
                 </div>
                 <div className="mt-4 flex gap-4">
                   <button
                     type="button"
-                    className="w-full inline-flex justify-center rounded-md border-transparent bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full inline-flex justify-center rounded-md border-transparent bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
                     onClick={handleCurrencyRequest}>
                     Request
                   </button>
                   <button
                     type="button"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent bg-white  px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent bg-white  px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
                     onClick={handlePayRequest}>
                     Pay
                   </button>

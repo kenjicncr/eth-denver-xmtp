@@ -1,6 +1,6 @@
 import React from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
-import { Combobox } from "@headlessui/react";
+import { Combobox, Listbox } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/outline";
 
 export const ChainSelection = () => {
@@ -13,24 +13,22 @@ export const ChainSelection = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex relative mt-2">
       {chain ? (
-        <Combobox value={chain} onChange={({ id }) => handleSwitchNetwork(id)}>
-          <Combobox.Button className="w-full items-center justify-between flex rounded-2xl border border-zinc-800 bg-background px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+        <Listbox value={chain} onChange={({ id }) => handleSwitchNetwork(id)}>
+          <Listbox.Button className="relative w-full min-w-[100px] text-center cursor-pointer rounded-lg border bg-zinc-800 py-2 px-8 shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
             {chain.name || "Select a network"}
-            <ChevronDownIcon
-              className="h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
-          </Combobox.Button>
-          <Combobox.Options className="absolute mt-1 max-h-60 flex-1 overflow-auto rounded-md bg-background py-1 text-white shadow-lg ring-1 ring-white ring-opacity-5 focus:outline-none sm:text-sm border-1">
+          </Listbox.Button>
+          <Listbox.Options className="absolute bg-zinc-800 text-center top-9 mt-1 max-h-60 w-full overflow-auto rounded-md  py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
             {chains.map((chainOption) => (
-              <Combobox.Option
+              <Listbox.Option
                 key={chainOption.id}
                 value={chainOption}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? "bg-zinc-800 text-white" : "text-white"
+                  `relative cursor-pointer select-none py-2  px-4 ${
+                    active
+                      ? "bg-zinc-800 hover:bg-zinc-900 text-white"
+                      : "text-white"
                   }`
                 }>
                 {({ selected, active }) => (
@@ -42,19 +40,12 @@ export const ChainSelection = () => {
                       {/* Icon or indicator for selected item */}
                       {chainOption.name}
                     </span>
-
-                    {selected ? (
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                          active ? "text-white" : "text-indigo-600"
-                        }`}></span>
-                    ) : null}
                   </>
                 )}
-              </Combobox.Option>
+              </Listbox.Option>
             ))}
-          </Combobox.Options>
-        </Combobox>
+          </Listbox.Options>
+        </Listbox>
       ) : (
         <div>Loading...</div>
       )}

@@ -101,6 +101,8 @@ export const FullConversationController: React.FC<
     [messages, conversation, conversationTopic],
   );
 
+  console.log({ messagesWithDates });
+
   return (
     <div
       id="scrollableDiv"

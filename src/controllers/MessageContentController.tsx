@@ -35,10 +35,12 @@ const MessageContentController = ({
   });
 
   const contentType = ContentTypeId.fromString(message.contentType);
+  console.log({ message });
 
   if (contentType.sameAs(ContentTypeText)) {
     const content = message.content as string;
     const isObject = typeof content === "object";
+
     if (isObject) {
       return (
         <PayOrRequestCurrencyPreviewCard message={message} isSelf={isSelf} />

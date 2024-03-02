@@ -180,7 +180,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
         <p className="ml-1">Pay</p>
       </div>
       <div className="relative w-full h-full flex flex-col items-between p-4 px-12 pt-8">
-        {isSelf && <p> You requested</p>}
+        {isSelf && <p className="text-center"> You requested</p>}
         <div className="flex-1">
           <p className="text-4xl text-center">
             <span className="font-bold">

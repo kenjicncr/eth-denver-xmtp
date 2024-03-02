@@ -13,7 +13,7 @@ interface UseSendCurrency {
   tokenAddress: `0x${string}` | undefined;
   from: `0x${string}` | undefined;
   to: `0x${string}` | undefined;
-  onSendSuccess?: (data: TransactionReceipt) => void;
+  onSendSuccess?: (data: string) => void;
 }
 export function useSendCurrency({
   amount,
@@ -45,14 +45,15 @@ export function useSendCurrency({
 
   const { data, isLoading, isSuccess, write, reset } = useContractWrite({
     ...config,
+    onSuccess(data) {
+      console.log("Successfully sent", data);
+      onSendSuccess && onSendSuccess(data.hash);
+    },
   });
 
   const items = useWaitForTransaction({
     hash: data?.hash,
-    onSuccess(data) {
-      console.log("Successfully sent", data);
-      onSendSuccess && onSendSuccess(data);
-    },
+
     enabled: !!data?.hash,
   });
 

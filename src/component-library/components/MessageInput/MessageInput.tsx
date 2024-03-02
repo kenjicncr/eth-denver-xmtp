@@ -153,8 +153,8 @@ export const MessageInput = ({
     tokenAddress: currRequest?.currencyRequest?.token,
     from: currRequest?.currencyRequest?.from,
     to: currRequest?.currencyRequest?.to,
-    onSendSuccess: (data) => {
-      void send({ hash: data.transactionHash });
+    onSendSuccess: (transactionHash) => {
+      void send({ hash: transactionHash });
     },
   });
 

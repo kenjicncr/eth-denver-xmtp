@@ -37,14 +37,12 @@ interface MessageContentControllerProps {
     message: CachedMessage | undefined,
     currencyRequest: CurrencyRequest | null,
   ) => void;
-  onSuccessPayment?: (data: TransactionReceipt) => void;
 }
 
 export const PayOrRequestCurrencyPreviewCard = ({
   isSelf,
   message,
   onPayMessageClick,
-  onSuccessPayment,
 }: MessageContentControllerProps) => {
   const content = message?.content;
   if (!content.amount) return null;
@@ -60,11 +58,11 @@ export const PayOrRequestCurrencyPreviewCard = ({
     tokenAddress: currencyRequest?.token,
     from: currencyRequest?.from,
     to: currencyRequest?.to,
-    onSendSuccess: (data) => {
-      console.log("succesfully sent  payment", data);
+    onSendSuccess: (transactionHash) => {
+      console.log("succesfully sent  payment", transactionHash);
       // void send({ hash: data.transactionHash });
-      onSuccessPayment && onSuccessPayment(data);
-      void send(data);
+      // onSuccessPayment && onSuccessPayment(transactionHash);
+      void send(transactionHash);
     },
   });
 
@@ -101,10 +99,10 @@ export const PayOrRequestCurrencyPreviewCard = ({
   }, [replies, token]);
 
   const send = useCallback(
-    (data: TransactionReceipt) => {
+    (transactionHash: string) => {
       if (
         currencyRequest &&
-        data?.transactionHash &&
+        transactionHash &&
         currencyRequest.token &&
         token &&
         conversation
@@ -112,7 +110,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
         const transactionReference: TransactionReference = {
           namespace: "eip155",
           networkId: currencyRequest.chainId,
-          reference: data.transactionHash,
+          reference: transactionHash,
           metadata: {
             amount: Number(currencyRequest.amount),
             currency: token?.symbol,

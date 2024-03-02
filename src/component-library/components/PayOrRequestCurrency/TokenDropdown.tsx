@@ -13,13 +13,12 @@ export const TokenDropDown = ({
   onSelectToken: (token: Token) => void;
   selectedToken: Token;
 }) => {
-
   const chainId = useChainId();
 
   useEffect(() => {
-    onSelectToken(tokens[0])
-  },[chainId])
-   
+    onSelectToken(tokens[0]);
+  }, [chainId]);
+
   return (
     <div className="w-full relative mt-2">
       <Menu>
@@ -35,10 +34,10 @@ export const TokenDropDown = ({
                   {({ active }) => (
                     <Button
                       variant="secondary"
-                      className={`relative cursor-pointer select-none py-2  px-4 w-full ${
+                      className={`rounded-none relative cursor-pointer select-none py-2  px-4 w-full ${
                         active
-                        ? "bg-zinc-800 hover:bg-zinc-900 text-white"
-                        : "text-white"
+                          ? "bg-zinc-800 hover:bg-zinc-900 text-white"
+                          : "text-white"
                       }`}
                       onClick={() => {
                         onSelectToken(token);

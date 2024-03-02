@@ -27,22 +27,8 @@ import {
 } from "@xmtp/content-type-transaction-reference";
 import { Token } from "../../../tokens/types";
 import useSelectedConversation from "../../../hooks/useSelectedConversation";
-
-function getChainName(chainId: number) {
-  switch (chainId) {
-    case 1:
-      return "Ethereum Mainnet";
-    case 3:
-      return "Ropsten Testnet";
-    case 4:
-      return "Rinkeby Testnet";
-    case 8453:
-      return "Base";
-    // Add more cases for other chain ids
-    default:
-      return "Unknown Chain";
-  }
-}
+import { getChainByChainId } from "./PayOrRequestCurrencyInputPreviewCard";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 interface MessageContentControllerProps {
   message?: CachedMessage;
@@ -63,6 +49,8 @@ export const PayOrRequestCurrencyPreviewCard = ({
   const content = message?.content;
   if (!content.amount) return null;
   const currencyRequest = content as CurrencyRequest | null;
+  const { chain } = useNetwork();
+
   const [isPaid, setIsPaid] = useState(false);
   const replies = useReplies(message);
 
@@ -77,6 +65,18 @@ export const PayOrRequestCurrencyPreviewCard = ({
       // void send({ hash: data.transactionHash });
       onSuccessPayment && onSuccessPayment(data);
       void send(data);
+    },
+  });
+
+  // reset
+  useEffect(() => {
+    sendCurrency.reset?.();
+  }, [chain?.id]);
+
+  const { switchNetworkAsync } = useSwitchNetwork({
+    onSuccess: () => {
+      onPayMessageClick && onPayMessageClick(message, currencyRequest);
+      sendCurrency.write?.();
     },
   });
 
@@ -134,21 +134,27 @@ export const PayOrRequestCurrencyPreviewCard = ({
     [conversation, replies, token, currencyRequest],
   );
 
-  const handleOnPayMessageClick = (
+  const handleOnPayMessageClick = async (
     message: CachedMessage | undefined,
     currencyRequest: CurrencyRequest | null,
   ) => {
     if (message) {
       setActiveMessage(message as CachedMessageWithId);
-      onPayMessageClick && onPayMessageClick(message, currencyRequest);
-      sendCurrency.write?.();
+      if (currencyRequest?.chainId !== chain?.id) {
+        await switchNetworkAsync?.(currencyRequest?.chainId!);
+        onPayMessageClick && onPayMessageClick(message, currencyRequest);
+        sendCurrency.write?.();
+      } else {
+        onPayMessageClick && onPayMessageClick(message, currencyRequest);
+        sendCurrency.write?.();
+      }
     }
   };
 
   const isSenderRequestingCurrency =
     message?.senderAddress === currencyRequest?.to;
 
-  const isDollar = token?.symbol === "USDC" || token?.symbol === "USDT";
+  const isDollar = token?.decimals === 6;
 
   const amount =
     currencyRequest !== undefined
@@ -183,25 +189,40 @@ export const PayOrRequestCurrencyPreviewCard = ({
           </p>
           {currencyRequest && (
             <p className="text-center text-sm">
-              {getChainName(currencyRequest?.chainId)}
+              on{" "}
+              {currencyRequest?.chainId &&
+                getChainByChainId(currencyRequest?.chainId as number)?.name}
             </p>
           )}
         </div>
         <div>
-          {isSenderRequestingCurrency && !isSelf && (
-            <button
-              type="button"
-              className={classNames(
-                "w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
-                isPaid
-                  ? "bg-background text-white hover:bg-background"
-                  : " bg-white text-black",
-              )}
-              onClick={() => handleOnPayMessageClick(message, currencyRequest)}
-              disabled={isPaid}>
-              {isPaid ? `Paid` : `Pay`}
-            </button>
-          )}
+          {isSenderRequestingCurrency &&
+            !isSelf &&
+            (isPaid ? (
+              <a
+                className={classNames(
+                  "cursor-default w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium  focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                  isPaid
+                    ? "bg-background text-white hover:bg-background"
+                    : " bg-white text-black",
+                )}>
+                {isPaid ? `Paid` : `Pay`}
+              </a>
+            ) : (
+              <button
+                type="button"
+                className={classNames(
+                  "w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium  focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                  isPaid
+                    ? "bg-background text-white hover:bg-background"
+                    : " bg-white text-black",
+                )}
+                onClick={() =>
+                  handleOnPayMessageClick(message, currencyRequest)
+                }>
+                Pay
+              </button>
+            ))}
         </div>
       </div>
     </div>

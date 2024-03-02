@@ -1,5 +1,6 @@
 import { CachedMessage } from "@xmtp/react-sdk";
 import { CurrencyRequest } from "../../../xmtp-content-types/currency-request";
+import { mainnet, moonbeam, base, Chain } from "@wagmi/core/chains";
 import { formatUnits } from "ethers";
 import {
   getTokenByAddress,
@@ -8,6 +9,18 @@ import {
 import { XCircleIcon } from "@heroicons/react/outline";
 import { baseTokens } from "../../../tokens/base";
 
+export const getChainByChainId = (chainId: number): Chain | null => {
+  switch (chainId) {
+    case 1:
+      return mainnet;
+    case 8453:
+      return base;
+    case 1284:
+      return moonbeam;
+    default:
+      return null;
+  }
+};
 interface PayOrRequestCurrencyInputPreviewCardProps {
   currencyRequest: CurrencyRequest;
   onCancel: () => void;
@@ -23,8 +36,7 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
 
   const token = tokenList?.[0];
 
-  const isDollar =
-    (token && token?.symbol === "USDC") || token?.symbol === "USDT";
+  const isDollar = token && token?.decimals === 6;
 
   return (
     <div className="relative m-4 p-8 h-48 w-fit min-w-[300px] bg-black text-white rounded-3xl">
@@ -34,6 +46,8 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
         </button>
       </div>
       <div className="flex flex-col items-center">
+        <p>Request</p>
+
         <p className="text-4xl">
           <span className="font-bold">
             {isDollar
@@ -46,13 +60,18 @@ export const PayOrRequestCurrencyInputPreviewCard = ({
             ${token?.symbol}`}
           </span>
         </p>
-        <p>Request</p>
         {currencyRequest.message && (
           <div className="mt-8 text-center">
-            <p className="text-sm  text-gray-200">For</p>
-            <p>{currencyRequest.message}</p>
+            <p className="text-sm  text-gray-200">
+              For {currencyRequest.message}
+            </p>
           </div>
         )}
+        <div className="mt-2 text-center">
+          <p className="text-sm  text-gray-200">
+            on {getChainByChainId(currencyRequest.chainId)?.name}
+          </p>
+        </div>
       </div>
     </div>
   );

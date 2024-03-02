@@ -9,22 +9,8 @@ import { mainnetTokens } from "../../../tokens/mainnet";
 import { formatUnits } from "viem";
 import { classNames } from "../../../helpers";
 import { TransactionReference } from "@xmtp/content-type-transaction-reference";
-
-function getChainName(chainId: number) {
-  switch (chainId) {
-    case 1:
-      return "Ethereum Mainnet";
-    case 3:
-      return "Ropsten Testnet";
-    case 4:
-      return "Rinkeby Testnet";
-    case 8453:
-      return "Base";
-    // Add more cases for other chain ids
-    default:
-      return "Unknown Chain";
-  }
-}
+import { getChainByChainId } from "./PayOrRequestCurrencyInputPreviewCard";
+import { Button } from "../../ui/button";
 
 interface MessageContentControllerProps {
   message?: CachedMessage;
@@ -43,9 +29,11 @@ export const PaidCurrencyPreviewCard = ({
     transactionReference?.networkId as number,
   );
 
-  const isDollar =
-    transactionReference.metadata?.currency === "USDC" ||
-    transactionReference.metadata?.currency === "USDT";
+  const referenceChain =
+    transactionReference?.networkId &&
+    getChainByChainId(transactionReference?.networkId as number);
+
+  const isDollar = transactionReference.metadata?.decimals === 6;
 
   const amount =
     transactionReference?.metadata !== undefined
@@ -58,7 +46,8 @@ export const PaidCurrencyPreviewCard = ({
       : "0";
 
   return (
-    <div className={classNames("h-48", "flex", "flex-col", "items-between")}>
+    <div
+      className={classNames("min-h-48", "flex", "flex-col", "items-between ")}>
       <div className="flex items-center mx-2 mt-2 text-sm font-medium">
         <svg
           width="16"
@@ -73,7 +62,7 @@ export const PaidCurrencyPreviewCard = ({
         </svg>
         <p className="ml-1">Pay</p>
       </div>
-      <div className="relative w-full h-full flex flex-col items-between p-4 px-12 pt-8">
+      <div className="relative w-full h-full flex flex-col items-between p-4 px-12 pt-8 text-center">
         {isSelf ? <p>You sent</p> : <p>You received</p>}
         <div className="flex-1">
           <p className="text-4xl text-center">
@@ -86,9 +75,21 @@ export const PaidCurrencyPreviewCard = ({
           </p>
           {transactionReference && (
             <p className="text-center text-sm">
-              {getChainName(transactionReference?.networkId as number)}
+              {transactionReference?.networkId &&
+                getChainByChainId(transactionReference?.networkId as number)
+                  ?.name}
             </p>
           )}
+          <Button className="mt-4" asChild>
+            <a
+              href={
+                referenceChain
+                  ? `${referenceChain.blockExplorers?.default?.url}/tx/${transactionReference?.reference}`
+                  : undefined
+              }>
+              View transaction
+            </a>
+          </Button>
         </div>
       </div>
     </div>

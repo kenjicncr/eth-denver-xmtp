@@ -19,6 +19,8 @@ import { ChainSelection } from "./ChainSelection";
 import { AvatarUrlProps, ResolvedAddress } from "./types";
 import { shortAddress } from "../../../helpers";
 import { PayDestinatonAddress } from "./PayDestinatonAddress";
+import { useNetwork } from "wagmi";
+import { getTokenlistByChainId } from "../../../tokens/utils";
 
 interface SendOrRequestCurrencyProps {
   onSend?: () => void;
@@ -54,8 +56,11 @@ export const PayOrRequestCurrencyModal = ({
   value,
   note,
 }: SendOrRequestCurrencyProps) => {
-  const tokenList = baseTokens;
-  const USDC = tokenList[0];
+  const { chain } = useNetwork();
+  const tokenList = chain ? getTokenlistByChainId(chain?.id) : [];
+
+  console.log({ tokenList, chain });
+  const token = tokenList && tokenList?.[0];
   const prefix = "$";
 
   const [className, setClassName] = useState("");
@@ -84,11 +89,11 @@ export const PayOrRequestCurrencyModal = ({
 
   const handleCurrencyRequest = () => {
     if (onRequest) {
-      if (resolvedAddress?.displayAddress) {
+      if (resolvedAddress?.displayAddress && token && chain?.id) {
         const currencyRequest: CurrencyRequest = {
-          amount: parseUnits(value, USDC.decimals).toString(),
-          chainId: 8453,
-          token: USDC.address as `0x${string}`,
+          amount: parseUnits(value, token.decimals).toString(),
+          chainId: chain?.id!,
+          token: token.address as `0x${string}`,
           from:
             resolvedAddress.displayAddress && resolvedAddress.walletAddress
               ? (resolvedAddress.walletAddress as `0x${string}`)
@@ -105,12 +110,12 @@ export const PayOrRequestCurrencyModal = ({
 
   const handlePayRequest = () => {
     if (onPay) {
-      if (resolvedAddress?.displayAddress) {
+      if (resolvedAddress?.displayAddress && token) {
         console.log({ resolvedAddress });
         const currencyRequest: CurrencyRequest = {
-          amount: parseUnits(value, USDC.decimals).toString(),
-          chainId: 8453,
-          token: USDC.address as `0x${string}`,
+          amount: parseUnits(value, token.decimals).toString(),
+          chainId: chain?.id!,
+          token: token.address as `0x${string}`,
           to:
             resolvedAddress.displayAddress && resolvedAddress.walletAddress
               ? (resolvedAddress.walletAddress as `0x${string}`)

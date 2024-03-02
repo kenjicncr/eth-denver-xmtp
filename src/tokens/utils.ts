@@ -4,6 +4,7 @@ import { mainnetTokens } from "./mainnet";
 import { Token } from "./types";
 import { CurrencyRequest } from "../xmtp-content-types/currency-request";
 import { CachedMessageWithId } from "@xmtp/react-sdk";
+import { moonbeamTokens } from "./moonbeam";
 
 export const getTokenByAddress = (
   tokens: Token[],
@@ -18,6 +19,10 @@ export const getTokenlistByChainId = (chainId: number) => {
       return mainnetTokens;
     case 8453:
       return baseTokens;
+    case 1284:
+      return moonbeamTokens;
+    default:
+      return [];
   }
 };
 

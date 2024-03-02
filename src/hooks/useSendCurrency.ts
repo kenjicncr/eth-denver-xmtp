@@ -43,7 +43,7 @@ export function useSendCurrency({
     onSuccess(data) {},
   });
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { data, isLoading, isSuccess, write, reset } = useContractWrite({
     ...config,
   });
 
@@ -56,5 +56,5 @@ export function useSendCurrency({
     enabled: !!data?.hash,
   });
 
-  return { error, isError, isLoading, isSuccess, data, write };
+  return { error, isError, isLoading, isSuccess, data, write, reset };
 }

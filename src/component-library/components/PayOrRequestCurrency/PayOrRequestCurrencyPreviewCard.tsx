@@ -100,36 +100,39 @@ export const PayOrRequestCurrencyPreviewCard = ({
     }
   }, [replies, token]);
 
-  const send = useCallback((data: TransactionReceipt) => {
-    if (
-      currencyRequest &&
-      data?.transactionHash &&
-      currencyRequest.token &&
-      token &&
-      conversation
-    ) {
-      const transactionReference: TransactionReference = {
-        namespace: "eip155",
-        networkId: currencyRequest.chainId,
-        reference: data.transactionHash,
-        metadata: {
-          amount: Number(currencyRequest.amount),
-          currency: token?.symbol,
-          fromAddress: currencyRequest.from,
-          toAddress: currencyRequest.to,
-          transactionType: "transfer",
-          decimals: token?.decimals,
-        },
-      };
+  const send = useCallback(
+    (data: TransactionReceipt) => {
+      if (
+        currencyRequest &&
+        data?.transactionHash &&
+        currencyRequest.token &&
+        token &&
+        conversation
+      ) {
+        const transactionReference: TransactionReference = {
+          namespace: "eip155",
+          networkId: currencyRequest.chainId,
+          reference: data.transactionHash,
+          metadata: {
+            amount: Number(currencyRequest.amount),
+            currency: token?.symbol,
+            fromAddress: currencyRequest.from,
+            toAddress: currencyRequest.to,
+            transactionType: "transfer",
+            decimals: token?.decimals,
+          },
+        };
 
-      const replyContent: Reply = {
-        reference: message?.xmtpID!,
-        contentType: ContentTypeTransactionReference,
-        content: transactionReference,
-      };
-      void sendMessage(conversation, replyContent, ContentTypeReply);
-    }
-  }, []);
+        const replyContent: Reply = {
+          reference: message?.xmtpID!,
+          contentType: ContentTypeTransactionReference,
+          content: transactionReference,
+        };
+        void sendMessage(conversation, replyContent, ContentTypeReply);
+      }
+    },
+    [conversation, replies, token, currencyRequest],
+  );
 
   const handleOnPayMessageClick = (
     message: CachedMessage | undefined,
@@ -186,6 +189,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
         <p className="ml-1">Pay</p>
       </div>
       <div className="relative w-full h-full flex flex-col items-between p-4 px-12 pt-8">
+        {isSelf && <p> You requested</p>}
         <div className="flex-1">
           <p className="text-4xl text-center">
             <span className="font-bold">
@@ -209,14 +213,6 @@ export const PayOrRequestCurrencyPreviewCard = ({
               onClick={() => handleOnPayMessageClick(message, currencyRequest)}
               disabled={isPaid}>
               {isPaid ? `Paid` : `Pay`}
-            </button>
-          )}
-          {isSelf && (
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              onClick={() => {}}>
-              You requested
             </button>
           )}
         </div>

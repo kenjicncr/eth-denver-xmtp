@@ -98,7 +98,10 @@ export const PayOrRequestCurrencyModal = ({
           amount: parseUnits(value, USDC.decimals).toString(),
           chainId: 8453,
           token: USDC.address as `0x${string}`,
-          from: resolvedAddress.displayAddress as `0x${string}`,
+          from:
+            resolvedAddress.displayAddress && resolvedAddress.displayAddress
+              ? (resolvedAddress.walletAddress as `0x${string}`)
+              : (resolvedAddress.displayAddress as `0x${string}`),
           to: clientAddress as `0x${string}`,
           message: note,
         };
@@ -116,7 +119,10 @@ export const PayOrRequestCurrencyModal = ({
           amount: parseUnits(value, USDC.decimals).toString(),
           chainId: 8453,
           token: USDC.address as `0x${string}`,
-          to: resolvedAddress.displayAddress as `0x${string}`,
+          to:
+            resolvedAddress.displayAddress && resolvedAddress.displayAddress
+              ? (resolvedAddress.walletAddress as `0x${string}`)
+              : (resolvedAddress.displayAddress as `0x${string}`),
           from: clientAddress as `0x${string}`,
           message: note,
         };
@@ -126,8 +132,6 @@ export const PayOrRequestCurrencyModal = ({
       }
     }
   };
-
-  console.log({ resolvedAddress });
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

@@ -4,6 +4,7 @@ const fetchHarpieValidation = async (
     apiKey: string,
     address: `0x${string}` | undefined
 ) => {
+    console.log(`Fetching harpie check for ${address}`);
     try {
         const response = await fetch("https://api.harpie.io/v2/validateAddress", {
             method: "POST",

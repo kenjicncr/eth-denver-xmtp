@@ -15,12 +15,11 @@ import { ContactsCombobox } from "./ContactsCombobox";
 import { baseTokens } from "../../../tokens/base";
 import { HarpieAlert } from "./HarpieAlert";
 import { useHarpieValidateAddress } from "../../../hooks/useHarpieValidateAddress";
+import { ChainSelection } from "./ChainSelection";
+import { AvatarUrlProps, ResolvedAddress } from "./types";
+import { shortAddress } from "../../../helpers";
+import { PayDestinatonAddress } from "./PayDestinatonAddress";
 
-const shortenAddress = (address: string, chars = 4): string => {
-  const prefix = address.slice(0, chars);
-  const suffix = address.slice(-chars);
-  return `${prefix}...${suffix}`;
-};
 
 interface SendOrRequestCurrencyProps {
   onSend?: () => void;
@@ -32,21 +31,11 @@ interface SendOrRequestCurrencyProps {
   /**
    * What, if any, resolved address is there?
    */
-  resolvedAddress?: {
-    displayAddress: string;
-    walletAddress?: string;
-  };
+  resolvedAddress?: ResolvedAddress
   /**
    * What are the props associated with the avatar?
    */
-  avatarUrlProps?: {
-    // What is the avatar url?
-    url?: string;
-    // Is the avatar url loading?
-    isLoading?: boolean;
-    // What's the address of this wallet?
-    address?: string;
-  };
+  avatarUrlProps?: AvatarUrlProps;
   value: string;
   note: string;
   onChangeValue: (value: string) => void;
@@ -171,33 +160,11 @@ export const PayOrRequestCurrencyModal = ({
                   className="text-center text-xl font-bold leading-6 text-gray-700">
                   Request or pay money
                 </Dialog.Title>
-                {resolvedAddress?.displayAddress ? (
-                  <div className="mt-8 flex flex-col items-center">
-                    {resolvedAddress?.displayAddress && (
-                      <Avatar {...avatarUrlProps} />
-                    )}
-                    {resolvedAddress?.displayAddress && (
-                      <p className="mt-2 font-medium">
-                        {resolvedAddress.displayAddress &&
-                          resolvedAddress.walletAddress
-                          ? resolvedAddress.displayAddress
-                          : shortenAddress(resolvedAddress.displayAddress)}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="mt-8 flex flex-col items-center">
-                    <button className="relative hover:bg-gray-700 hover:-bg-opacity-80 rounded-full flex items-center justify-center overflow-hidden">
-                      <div>
-                        <Avatar />
-                      </div>
-                      <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-40 hover:bg-opacity-80">
-                        <PlusCircleIcon width={16} height={16} fill="#ffff" />
-                      </div>
-                    </button>
-                    <ContactsCombobox />
-                  </div>
-                )}
+                <PayDestinatonAddress resolvedAddress={resolvedAddress} avatarUrlProps={avatarUrlProps}/>
+                <div className='flex'>
+                  <ChainSelection/>
+                </div>
+
                 <div className="mt-2 flex items-center">
                   <CurrencyInput
                     id="validationCustom01"

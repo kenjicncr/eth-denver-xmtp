@@ -54,6 +54,8 @@ import { getTokenByAddress } from "../../../tokens/utils";
 import { baseTokens } from "../../../tokens/base";
 import { ConfirmationModal } from "../PayOrRequestCurrency/ConfirmationModal";
 import { TransactionReference } from "@xmtp/content-type-transaction-reference";
+import { ContactListSelector } from "../PayOrRequestCurrency/ContactListSelector";
+import { useDisclosure } from "../../../hooks/useDisclosure";
 
 type InputProps = {
   /**
@@ -139,6 +141,8 @@ export const MessageInput = ({
   const currRequest = useCurrencyRequestModal({
     receiverAddress: recipientAddress,
   });
+
+  const contactSelectorDisclosure = useDisclosure();
 
   // can probably move this to parent component
   const sendCurrency = useSendCurrency({
@@ -578,6 +582,7 @@ export const MessageInput = ({
         </div>
       </form>
       <PayOrRequestCurrencyModal
+        onClickAvatar={() => contactSelectorDisclosure.onOpen()}
         onClose={() => currRequest.setIsModalOpen(false)}
         clientAddress={senderAddress}
         isOpen={currRequest.isOpen}
@@ -597,6 +602,15 @@ export const MessageInput = ({
           url: recipientAvatar || "",
           isLoading: recipientState === "loading",
           address: recipientAddress ?? undefined,
+        }}
+      />
+      <ContactListSelector
+        onClose={contactSelectorDisclosure.onClose}
+        isOpen={contactSelectorDisclosure.isOpen}
+        onOpen={contactSelectorDisclosure.onOpen}
+        onContactSelected={(contacts) => console.log(contacts)}
+        onConfirm={() => {
+          contactSelectorDisclosure.onClose();
         }}
       />
       <ConfirmationModal

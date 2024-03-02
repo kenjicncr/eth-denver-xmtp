@@ -21,6 +21,7 @@ import { shortAddress } from "../../../helpers";
 import { PayDestinatonAddress } from "./PayDestinatonAddress";
 import { useNetwork } from "wagmi";
 import { getTokenlistByChainId } from "../../../tokens/utils";
+import { TokenDropDown } from "./TokenDropdown";
 
 interface SendOrRequestCurrencyProps {
   onSend?: () => void;
@@ -42,6 +43,7 @@ interface SendOrRequestCurrencyProps {
   onChangeValue: (value: string) => void;
   onChangeNote: (note: string) => void;
   onPay: (currencyRequest: CurrencyRequest) => void;
+  onClickAvatar?: () => void;
 }
 export const PayOrRequestCurrencyModal = ({
   isOpen,
@@ -53,14 +55,14 @@ export const PayOrRequestCurrencyModal = ({
   clientAddress,
   onChangeNote,
   onChangeValue,
+  onClickAvatar,
   value,
   note,
 }: SendOrRequestCurrencyProps) => {
   const { chain } = useNetwork();
   const tokenList = chain ? getTokenlistByChainId(chain?.id) : [];
 
-  console.log({ tokenList, chain });
-  const token = tokenList && tokenList?.[0];
+  const [token, setSelectedToken] = useState(tokenList && tokenList?.[0]);
   const prefix = "$";
 
   const [className, setClassName] = useState("");
@@ -139,6 +141,8 @@ export const PayOrRequestCurrencyModal = ({
     resolvedAddress?.displayAddress as `0x${string}` | undefined,
   );
 
+  const isDollar = token && token?.decimals === 6;
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -185,15 +189,12 @@ export const PayOrRequestCurrencyModal = ({
                   className="text-center text-xl font-bold leading-6 text-zinc-100">
                   Request or pay money
                 </Dialog.Title>
-                <PayDestinatonAddress
-                  resolvedAddress={resolvedAddress}
-                  avatarUrlProps={avatarUrlProps}
-                />
+
                 <div className="flex justify-center">
                   <ChainSelection />
                 </div>
 
-                <div className="mt-12 flex items-center">
+                <div className="mt-12 flex items-center justify-center flex-col">
                   <CurrencyInput
                     id="validationCustom01"
                     name="input-1"
@@ -201,12 +202,19 @@ export const PayOrRequestCurrencyModal = ({
                     defaultValue={value}
                     onValueChange={handleOnValueChange}
                     prefix={prefix}
-                    placeholder="$0.00"
+                    placeholder={isDollar ? `$0.00` : `0 ${token.symbol}`}
                     step={1}
                     className="bg-zinc-900 input:first-letter:text-sm min-w-[1px] p-0 text-4xl font-bold text-center w-auto border-0 focus:outline-none focus:border-none focus:shadow-none"
                     style={{
                       boxShadow: `unset`,
                     }}
+                  />
+                  <TokenDropDown
+                    tokens={tokenList}
+                    onSelectToken={(token) => {
+                      setSelectedToken(token);
+                    }}
+                    selectedToken={token}
                   />
                 </div>
                 <div className="pt-16">

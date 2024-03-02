@@ -25,6 +25,11 @@ import {
 import App from "./controllers/AppController";
 import { isAppEnvDemo } from "./helpers";
 import { mockConnector } from "./helpers/mockConnector";
+// TODO, this is probably re-exported by wagmi, maybe we use that
+import {
+  QueryClient,
+  QueryClientProvider
+} from '@tanstack/react-query'
 
 import { CurrencyRequestContentTypeConfig } from "./xmtp-content-types/currency-request";
 import { transactionReferenceContentTypeConfig } from "./xmtp-content-types/transaction-reference";
@@ -50,7 +55,7 @@ const contentTypeConfigs = [
 ];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, base, moonbeam ],
+  [mainnet, base, moonbeam],
   [
     infuraProvider({ apiKey: import.meta.env.VITE_INFURA_ID ?? "" }),
     publicProvider(),
@@ -81,7 +86,7 @@ const wagmiDemoConfig = createConfig({
   connectors: [mockConnector],
   publicClient,
   webSocketPublicClient,
-});wagmiDemoConfig
+}); wagmiDemoConfig
 
 const wagmiConfig = createConfig({
   autoConnect: true,
@@ -90,16 +95,20 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
+const queryClient = new QueryClient()
+
 createRoot(document.getElementById("root") as HTMLElement).render(
   <WagmiConfig config={isAppEnvDemo() ? wagmiDemoConfig : wagmiConfig}>
     <RainbowKitProvider chains={chains}>
-      <StrictMode>
-        <XMTPProvider
-          contentTypeConfigs={contentTypeConfigs}
-          dbVersion={DB_VERSION}>
-          <App />
-        </XMTPProvider>
-      </StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <StrictMode>
+          <XMTPProvider
+            contentTypeConfigs={contentTypeConfigs}
+            dbVersion={DB_VERSION}>
+            <App />
+          </XMTPProvider>
+        </StrictMode>
+      </QueryClientProvider>
     </RainbowKitProvider>
   </WagmiConfig>,
 );

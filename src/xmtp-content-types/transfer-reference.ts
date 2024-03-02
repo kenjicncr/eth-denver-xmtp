@@ -3,20 +3,17 @@ import type { ContentCodec, EncodedContent } from "@xmtp/xmtp-js";
 
 import { ContentTypeConfiguration } from "@xmtp/react-sdk";
 
-export const ContentTypeCurrencyRequest = new ContentTypeId({
-  authorityId: "evmmo.io",
+export const ContentTypeTransferReference = new ContentTypeId ({
+  authorityId: "xmtpay.io",
   typeId: "currency-request",
   versionMajor: 0,
   versionMinor: 1,
 });
 
-export class CurrencyRequest {
-  public amount: string;
+export class TransferReference {
   public chainId: number;
-  public token: `0x${string}`;
-  public from: `0x${string}`;
-  public to: `0x${string}`;
-  public message: string;
+  public txHash: `0x${string}`;
+  public transactionType: string
 
   constructor(
     amount: string,
@@ -42,6 +39,7 @@ export class ContentTypeSendCurrencyCodec
     return ContentTypeCurrencyRequest;
   }
   encode(req: any): EncodedContent {
+    console.log({ req });
     const { amount, chainId, token, from, to, message } = req;
     return {
       type: ContentTypeCurrencyRequest,

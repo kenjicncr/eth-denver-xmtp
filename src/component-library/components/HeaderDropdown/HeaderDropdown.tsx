@@ -37,7 +37,7 @@ export const HeaderDropdown = ({
     <div
       data-modal-target="headerModalId"
       data-testid="conversation-list-header"
-      className="border-l border-r border-b border-gray-200 bg-gray-100 h-16 p-4 pt-5">
+      className="border-l border-r border-b h-16 p-4 pt-5">
       <div className="flex justify-between items-center">
         {tabs.map(({ name, testId }) => (
           <button

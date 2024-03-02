@@ -375,7 +375,7 @@ export const MessageInput = ({
       {openEffectDialog ? (
         <EffectDialog handleSendEffect={handleSendEffect} />
       ) : null}
-      <form className="flex flex-col border border-gray-300 rounded-2xl m-4">
+      <form className="flex flex-col border border-zinc-800  rounded-2xl m-4">
         <label htmlFor="chat" className="sr-only">
           {t("messages.message_field_prompt")}
         </label>
@@ -416,7 +416,7 @@ export const MessageInput = ({
                 rows={1}
                 className={classNames(
                   textAreaStyles,
-                  "border-b-8 border-gray-50 m-0 bg-transparent",
+                  "border-b-8 border-gray-50 m-0 bg-transparent text-white",
                   recordingValue && "text-red-500",
                 )}
                 placeholder={t("messages.message_field_prompt") || ""}
@@ -485,13 +485,13 @@ export const MessageInput = ({
               />
             </div>
           )}
-        <div className="flex justify-between bg-gray-100 rounded-b-2xl px-2">
+        <div className="flex justify-between bg-zinc-900 rounded-b-2xl px-2">
           <div className="flex flex-row">
             <PhotographIcon
               tabIndex={0}
               width={24}
               height={24}
-              className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+              className="m-2 cursor-pointer  text-zinc-500 hover:text-zinc-100 focus:outline-none focus-visible:ring"
               onClick={() => onButtonClick("image")}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("image")
@@ -501,7 +501,7 @@ export const MessageInput = ({
               tabIndex={0}
               width={26}
               height={26}
-              className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+              className="m-2 cursor-pointer  text-zinc-500 hover:text-zinc-100 focus:outline-none focus-visible:ring"
               onClick={() => currRequest.setIsModalOpen(true)}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("currency")
@@ -511,7 +511,7 @@ export const MessageInput = ({
               tabIndex={0}
               width={24}
               height={24}
-              className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+              className="m-2 cursor-pointer  text-zinc-500 hover:text-zinc-100 focus:outline-none focus-visible:ring"
               onClick={() => onButtonClick("application")}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("application")
@@ -521,7 +521,7 @@ export const MessageInput = ({
               tabIndex={0}
               width={26}
               height={26}
-              className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+              className="m-2 cursor-pointer  text-zinc-500 hover:text-zinc-100 focus:outline-none focus-visible:ring"
               onClick={() => onButtonClick("video")}
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && onButtonClick("video")
@@ -534,7 +534,7 @@ export const MessageInput = ({
                   tabIndex={0}
                   width={24}
                   height={24}
-                  className="m-2 cursor-pointer text-gray-400 hover:text-black focus:outline-none focus-visible:ring"
+                  className="m-2 cursor-pointer text-zinc-500 hover:text-zinc-100 focus:outline-none focus-visible:ring"
                   onClick={() => {
                     startRecording();
                     start();

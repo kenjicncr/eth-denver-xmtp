@@ -58,22 +58,7 @@ export const PaidCurrencyPreviewCard = ({
       : "0";
 
   return (
-    <div
-      className={classNames(
-        " bg-black",
-        isSelf ? "rounded-bl-xl" : "rounded-tl-xl",
-        isSelf ? "rounded-bl-xl" : "rounded-br-xl",
-        "rounded-tr-xl",
-        "rounded-tl-xl",
-        "-m-2",
-        "-ml-3",
-        "-mr-3",
-        "text-white",
-        "h-48",
-        "flex",
-        "flex-col",
-        "items-between",
-      )}>
+    <div className={classNames("h-48", "flex", "flex-col", "items-between")}>
       <div className="flex items-center mx-2 mt-2 text-sm font-medium">
         <svg
           width="16"

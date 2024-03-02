@@ -123,7 +123,6 @@ const Inbox: React.FC<{ children?: React.ReactNode }> = () => {
   ) : (
     // Controller for drag-and-drop area
     <div
-      className={isDragActive ? "bg-slate-100" : "bg-white"}
       onDragOver={handleDrag}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}

@@ -158,22 +158,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
       : "0";
 
   return (
-    <div
-      className={classNames(
-        " bg-black",
-        isSelf ? "rounded-bl-xl" : "rounded-tl-xl",
-        isSelf ? "rounded-bl-xl" : "rounded-br-xl",
-        "rounded-tr-xl",
-        "rounded-tl-xl",
-        "-m-2",
-        "-ml-3",
-        "-mr-3",
-        "text-white",
-        "h-48",
-        "flex",
-        "flex-col",
-        "items-between",
-      )}>
+    <div className={classNames("h-48", "flex", "flex-col", "items-between")}>
       <div className="flex items-center mx-2 mt-2 text-sm font-medium">
         <svg
           width="16"
@@ -207,8 +192,10 @@ export const PayOrRequestCurrencyPreviewCard = ({
             <button
               type="button"
               className={classNames(
-                "w-full inline-flex justify-center rounded-md border border-transparent bg-white text-black px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
-                isPaid ? "bg-gray-400 hover:bg-gray-600" : "",
+                "w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                isPaid
+                  ? "bg-background text-white hover:bg-background"
+                  : " bg-white text-black",
               )}
               onClick={() => handleOnPayMessageClick(message, currencyRequest)}
               disabled={isPaid}>

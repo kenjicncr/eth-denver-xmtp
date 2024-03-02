@@ -8,6 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import styles from "./ReactionsBar.module.css";
 import { useXmtpStore } from "../../../store/xmtp";
+import { classNames } from "../../../helpers";
 
 export type ReactionsBarProps = {
   conversation: CachedConversation;
@@ -48,7 +49,9 @@ export const ReactionsBar: React.FC<ReactionsBarProps> = ({
 
   return (
     <div className="flex items-center gap-1">
-      <div className={styles.wrapper} data-testid="reactions-bar">
+      <div
+        className={classNames(`${styles.wrapper} bg-zinc-700`)}
+        data-testid="reactions-bar">
         {availableReactionEmojis.map((emoji) => (
           <button
             type="button"
@@ -62,7 +65,7 @@ export const ReactionsBar: React.FC<ReactionsBarProps> = ({
       </div>
       {!activeMessage ? (
         <button
-          className="bg-gray-100 p-1 px-2 rounded-lg"
+          className="bg-zinc-700 p-1 px-2 rounded-lg"
           data-testid="reply-icon"
           onClick={() => {
             setActiveMessage(message);

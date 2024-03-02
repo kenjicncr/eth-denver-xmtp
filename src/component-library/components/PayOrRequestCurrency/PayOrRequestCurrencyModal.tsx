@@ -20,7 +20,6 @@ import { AvatarUrlProps, ResolvedAddress } from "./types";
 import { shortAddress } from "../../../helpers";
 import { PayDestinatonAddress } from "./PayDestinatonAddress";
 
-
 interface SendOrRequestCurrencyProps {
   onSend?: () => void;
   onRequest?: (currencyRequest: CurrencyRequest) => void;
@@ -31,7 +30,7 @@ interface SendOrRequestCurrencyProps {
   /**
    * What, if any, resolved address is there?
    */
-  resolvedAddress?: ResolvedAddress
+  resolvedAddress?: ResolvedAddress;
   /**
    * What are the props associated with the avatar?
    */
@@ -126,15 +125,17 @@ export const PayOrRequestCurrencyModal = ({
     }
   };
 
-  const checkAddress = resolvedAddress?.displayAddress as `0x${string}` | undefined;
+  const checkAddress = resolvedAddress?.displayAddress as
+    | `0x${string}`
+    | undefined;
 
-  const {
-    isMaliciousAddress
-  } = useHarpieValidateAddress(import.meta.env.VITE_HARPIE_KEY, resolvedAddress?.displayAddress as `0x${string}` | undefined)
+  const { isMaliciousAddress } = useHarpieValidateAddress(
+    import.meta.env.VITE_HARPIE_KEY,
+    resolvedAddress?.displayAddress as `0x${string}` | undefined,
+  );
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
@@ -157,22 +158,23 @@ export const PayOrRequestCurrencyModal = ({
               leave="ease-in duration-200"
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95">
-
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all">
                 <HarpieAlert isFlagged={isMaliciousAddress}></HarpieAlert>
 
                 <Dialog.Title
                   as="h3"
-                  className="text-center text-xl font-bold leading-6 text-gray-700">
+                  className="text-center text-xl font-bold leading-6 text-zinc-100">
                   Request or pay money
                 </Dialog.Title>
-                <PayDestinatonAddress resolvedAddress={resolvedAddress} avatarUrlProps={avatarUrlProps}/>
-                <div className='flex'>
-                  <ChainSelection/>
+                <PayDestinatonAddress
+                  resolvedAddress={resolvedAddress}
+                  avatarUrlProps={avatarUrlProps}
+                />
+                <div className="flex justify-center">
+                  <ChainSelection />
                 </div>
 
-                <div className="mt-2 flex items-center">
+                <div className="mt-12 flex items-center">
                   <CurrencyInput
                     id="validationCustom01"
                     name="input-1"
@@ -182,32 +184,32 @@ export const PayOrRequestCurrencyModal = ({
                     prefix={prefix}
                     placeholder="$0.00"
                     step={1}
-                    className="input:first-letter:text-sm min-w-[1px] p-0 text-4xl font-bold text-center w-auto border-0 focus:outline-none focus:border-none focus:shadow-none"
+                    className="bg-zinc-900 input:first-letter:text-sm min-w-[1px] p-0 text-4xl font-bold text-center w-auto border-0 focus:outline-none focus:border-none focus:shadow-none"
                     style={{
                       boxShadow: `unset`,
                     }}
                   />
                 </div>
-                <div className="pt-32">
+                <div className="pt-16">
                   <input
                     value={note}
                     onChange={(e: any) =>
                       onChangeNote && onChangeNote(e.target.value)
                     }
-                    className="border-[1px] border-gray-400 rounded-md w-full h-12 px-2"
+                    className="border-[1px] border-zinc-800 rounded-lg w-full h-12 px-2 bg-background"
                     placeholder="What's this for?"
                   />
                 </div>
-                <div className="mt-2 flex gap-4">
+                <div className="mt-4 flex gap-4">
                   <button
                     type="button"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-800 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full inline-flex justify-center rounded-md border-transparent bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={handleCurrencyRequest}>
                     Request
                   </button>
                   <button
                     type="button"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-800 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent bg-white  px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={handlePayRequest}>
                     Pay
                   </button>

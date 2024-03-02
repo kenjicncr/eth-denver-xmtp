@@ -48,7 +48,7 @@ export const ConversationList = ({
     </div>
   ) : (
     <Virtuoso
-      className="sm:w-full flex flex-col h-full bg-gray-100 border-x"
+      className="sm:w-full flex flex-col h-full border-x"
       data-testid="conversations-list-panel"
       data={messages}
       itemContent={(index, message) => message}

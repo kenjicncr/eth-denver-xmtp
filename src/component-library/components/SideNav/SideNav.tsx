@@ -148,10 +148,7 @@ const SideNav = ({
         "justify-between",
         "items-center",
         "h-screen",
-        "bg-white",
         isOpen ? "px-6" : "px-3",
-        "border-r",
-        "border-gray-200",
         "shadow-lg",
         !isOpen ? "w-[64px]" : "absolute w-[80vw] lg:w-full lg:relative z-50",
       )}>

@@ -7,6 +7,7 @@ import {
   useSendMessage,
   useClient,
   useReplies,
+  ContentTypeId,
 } from "@xmtp/react-sdk";
 import type {
   CachedConversation,
@@ -18,6 +19,7 @@ import { DateDivider } from "../DateDivider/DateDivider";
 import { classNames } from "../../../helpers";
 import { ReactionsBar } from "../ReactionsBar/ReactionsBar";
 import { useXmtpStore } from "../../../store/xmtp";
+import { ContentTypeCurrencyRequest } from "../../../xmtp-content-types/currency-request";
 
 interface MessageSender {
   displayAddress: string;
@@ -50,9 +52,9 @@ type FullMessageProps = PropsWithChildren & {
   isReply?: boolean;
 };
 
-const incomingMessageBackgroundStyles = "bg-gray-200 rounded-br-lg pl-2";
+const incomingMessageBackgroundStyles = "bg-zinc-800 rounded-br-lg pl-2";
 const outgoingMessageBackgroundStyles =
-  "bg-indigo-600 text-white rounded-bl-lg message-sender";
+  "bg-blue-600 text-white rounded-bl-lg message-sender";
 const errorMessageBackgroundStyles =
   "bg-white rounded-bl-lg pl-2 border-gray-200 border";
 
@@ -101,6 +103,8 @@ export const FullMessage = ({
     },
     [handleCancel],
   );
+
+  const contentType = ContentTypeId.fromString(message.contentType);
 
   const messageBackgroundStyles = useMemo(() => {
     if (message.hasLoadError) {
@@ -169,6 +173,9 @@ export const FullMessage = ({
             className={classNames(
               "whitespace-pre-wrap p-2 px-3 rounded-tl-xl rounded-tr-xl my-1 max-w-fit break-words text-md pl-3 mt-0",
               messageBackgroundStyles,
+              contentType.sameAs(ContentTypeCurrencyRequest)
+                ? "bg-zinc-900"
+                : "",
             )}
             onMouseOver={() => setOnHover(true)}
             onFocus={() => setOnHover(true)}>

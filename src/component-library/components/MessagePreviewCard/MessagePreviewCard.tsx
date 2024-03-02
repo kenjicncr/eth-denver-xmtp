@@ -86,8 +86,8 @@ export const MessagePreviewCard = ({
     <div
       role="button"
       className={classNames(
-        "flex justify-between items-center border-0 border-b border-gray-200 outline-blue outline-b-0 h-min cursor-pointer",
-        isSelected ? "bg-gray-200" : "bg-gray-100",
+        "flex justify-between items-center border-0 border-b  outline-blue outline-b-0 h-min cursor-pointer hover:bg-zinc-900 ",
+        isSelected ? "bg-border" : "",
         isLoading ? "px-4 py-2" : "p-4",
       )}
       onClick={onClick}
@@ -105,7 +105,7 @@ export const MessagePreviewCard = ({
           !isLoading ? "overflow-hidden" : "",
         )}>
         {!isLoading && conversationDomain && (
-          <div className="text-sm mb-1 text-white px-2 rounded-lg bg-indigo-600">
+          <div className="text-sm mb-1 text-white px-2 rounded-lg bg-blue-500">
             {conversationDomain}
           </div>
         )}

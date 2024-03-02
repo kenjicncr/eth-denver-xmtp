@@ -1,6 +1,4 @@
 .wrapper {
-  background-color: #eee;
-  border: 1px solid #ccc;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -20,6 +18,5 @@
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
-  background-color: #ddd;
   cursor: pointer;
 }

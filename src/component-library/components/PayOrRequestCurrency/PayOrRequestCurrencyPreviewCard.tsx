@@ -71,7 +71,7 @@ export const PayOrRequestCurrencyPreviewCard = ({
   // reset
   useEffect(() => {
     sendCurrency.reset?.();
-  }, [chain?.id]);
+  }, [chain?.id, currencyRequest]);
 
   const { switchNetworkAsync } = useSwitchNetwork({
     onSuccess: () => {

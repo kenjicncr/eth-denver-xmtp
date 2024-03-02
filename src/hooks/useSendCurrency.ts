@@ -27,7 +27,6 @@ export function useSendCurrency({
   const tokenDecimals = tokenAddress
     ? getTokenByAddress(chainTokens, tokenAddress)?.decimals
     : undefined;
-  console.log({ tokenAddress, to, tokenDecimals, amount });
 
   const amountBN = amount && BigInt(amount);
 

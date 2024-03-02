@@ -26,13 +26,11 @@ import App from "./controllers/AppController";
 import { isAppEnvDemo } from "./helpers";
 import { mockConnector } from "./helpers/mockConnector";
 // TODO, this is probably re-exported by wagmi, maybe we use that
-import {
-  QueryClient,
-  QueryClientProvider
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { CurrencyRequestContentTypeConfig } from "./xmtp-content-types/currency-request";
 import { transactionReferenceContentTypeConfig } from "./xmtp-content-types/transaction-reference";
+import { ThemeProvider } from "./component-library/components/ThemeProvider/ThemeProvider";
 
 // Increment with any schema change; e.g. adding support for a new content type
 const DB_VERSION = 6;
@@ -51,7 +49,7 @@ const contentTypeConfigs = [
   replyContentTypeConfig,
   customConfig,
   CurrencyRequestContentTypeConfig,
-  transactionReferenceContentTypeConfig
+  transactionReferenceContentTypeConfig,
 ];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -86,7 +84,8 @@ const wagmiDemoConfig = createConfig({
   connectors: [mockConnector],
   publicClient,
   webSocketPublicClient,
-}); wagmiDemoConfig
+});
+wagmiDemoConfig;
 
 const wagmiConfig = createConfig({
   autoConnect: true,
@@ -95,7 +94,7 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <WagmiConfig config={isAppEnvDemo() ? wagmiDemoConfig : wagmiConfig}>
@@ -105,7 +104,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
           <XMTPProvider
             contentTypeConfigs={contentTypeConfigs}
             dbVersion={DB_VERSION}>
-            <App />
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+              <App />
+            </ThemeProvider>
           </XMTPProvider>
         </StrictMode>
       </QueryClientProvider>
